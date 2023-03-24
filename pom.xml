@@ -7,7 +7,7 @@
     <version>2.7.3</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
-  <groupId>com.github.throyer.common.spring-boot</groupId>
+  <groupId>com.github.frankiie.common.spring-boot</groupId>
   <artifactId>api</artifactId>
   <version>4.1.2</version>
   <name>CRUD API</name>
@@ -67,13 +67,20 @@
     </dependency>
 
     <!-- flyway database | migrations -->
-    <dependency>
+    <!-- <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-jooq</artifactId>
+    </dependency>
+
+    <!-- cloudinary for image upload -->
+    <dependency>
+      <groupId>com.cloudinary</groupId>
+      <artifactId>cloudinary-http44</artifactId>
+      <version>1.17.0</version>
     </dependency>
 
     <!-- swagger -->
