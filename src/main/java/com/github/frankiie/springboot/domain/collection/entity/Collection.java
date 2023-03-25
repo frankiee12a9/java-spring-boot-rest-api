@@ -3,7 +3,9 @@ package com.github.frankiie.springboot.domain.collection.entity;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,16 +32,22 @@ import com.github.frankiie.springboot.domain.collection_note.entity.Note;
 import com.github.frankiie.springboot.domain.collection_note_comment.entity.Comment;
 import com.github.frankiie.springboot.domain.management.entity.Auditable;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.of;
 
 import static com.github.frankiie.springboot.utils.JSON.stringify;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+// note: The @EqualsAndHashCode(callSuper = true) annotation tells Lombok to include the fields of the superclass in the generated equals() 
+// and hashCode() methods. If you’re experiencing a StackOverflowError when updating one of the child entities, it’s possible that there is a circular 
+// reference between the parent and child entities that is causing an infinite recursion when calling the hashCode() method.
+
+// @EqualsAndHashCode(callSuper = true)
+@Setter
+@Getter
 @Table(name = "collection")
 @Entity
 public class Collection extends Auditable {
@@ -55,19 +63,16 @@ public class Collection extends Auditable {
     @Column(name = "collection_desc")
     private String description;
  
-    // CascadeType.ALL will cause the `PersistentObjectException` when persist Image, then persist Collection
-    // reference: https://www.baeldung.com/hibernate-detached-entity-passed-to-persist
-    // @OneToOne(cascade = CascadeType.MERGE)
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "collection")
     private Image image;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinTable(name = "collection_note", 
-            joinColumns = @JoinColumn(name = "collection_id", referencedColumnName = "id", nullable = true), 
-            inverseJoinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id", nullable = true))
+            joinColumns = @JoinColumn(name = "collection_id", referencedColumnName = "id"), 
+            inverseJoinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id"))
     private List<Note> notes = new ArrayList<>();
 
     public Collection() {
@@ -94,21 +99,7 @@ public class Collection extends Auditable {
     }
 
     public List<Note> getNotes() {
-      if (this.notes == null) {
-        return null;
-      } else {
-        return new ArrayList<>(this.notes);
-      }
-    }
-
-    public void setNotes(List<Note> notes) {
-      if (this.notes == null) {
-        this.notes = new ArrayList<>();
-      }
-      this.notes.clear();
-      if (this.notes != null) {
-        this.notes.addAll(notes);
-      }
+      return this.notes;
     }
 
     public List<Comment> getComments() {

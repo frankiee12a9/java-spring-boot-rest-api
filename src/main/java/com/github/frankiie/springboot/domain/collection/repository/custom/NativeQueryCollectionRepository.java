@@ -14,7 +14,8 @@ import java.util.Optional;
 public interface NativeQueryCollectionRepository {
     Optional<Collection> findById(Long id);
     Optional<Collection> findByIdAndFetchComments(Long id);
-    Page<Comment> findCommentsById(Long id, Pageable pageable);  // NOTE: this might me moved to `Comment` service
+    // note: this might need to be moved to the `Comment` service
+    Page<Comment> findCommentsById(Long id, Pageable pageable);  
     Page<Collection> findByKeyword(Pageable pageable, String keyword);
     Page<Collection> findMany(Pageable pageable);
     Optional<Collection> updateById(Long id, UpdateCollectionProps props);

@@ -24,28 +24,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.frankiie.springboot.domain.collection.entity.Collection;
 import com.github.frankiie.springboot.domain.collection.payload.CollectionResponse;
 import com.github.frankiie.springboot.domain.collection.payload.CreateCollectionProps;
 import com.github.frankiie.springboot.domain.collection.payload.UpdateCollectionProps;
 import com.github.frankiie.springboot.domain.collection.service.CollectionService;
 import com.github.frankiie.springboot.domain.collection_image.entity.Image;
 import com.github.frankiie.springboot.domain.collection_image.payload.CreateImageProps;
-import com.github.frankiie.springboot.domain.collection_image.payload.ImageResponse;
+import com.github.frankiie.springboot.domain.collection_note.payload.NoteResponse;
+import com.github.frankiie.springboot.domain.collection_note.service.NoteService;
 import com.github.frankiie.springboot.domain.collection_note_comment.entity.Comment;
 import com.github.frankiie.springboot.domain.collection_note_comment.payload.CreateCommentProps;
 import com.github.frankiie.springboot.domain.pagination.model.Page;
 
-import static com.github.frankiie.springboot.utils.Responses.created;
-import static com.github.frankiie.springboot.utils.Responses.ok;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static com.github.frankiie.springboot.utils.Responses.created;
-import static com.github.frankiie.springboot.utils.Responses.ok;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static com.github.frankiie.springboot.constants.VALUES.DEFAULT_PAGE_NUMBER;
-import static com.github.frankiie.springboot.constants.VALUES.DEFAULT_PAGE_SIZE;
+import static com.github.frankiie.springboot.utils.Responses.*;
+import static org.springframework.http.HttpStatus.*;
+import static com.github.frankiie.springboot.constants.VALUES.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -55,14 +48,25 @@ public class CollectionsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CollectionsController.class);
 
     @Autowired private final CollectionService collectionService;
+    @Autowired private final NoteService noteService;
 
     @GetMapping
     @SecurityRequirement(name = "token")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @Operation(summary = "Returns a list of courses with paging")
+    @Operation(summary = "Returns a list of collections with paging")
     public ResponseEntity<Page<CollectionResponse>> getMany(Optional<Integer> page, Optional<Integer> size) {
         var content = collectionService.findMany(page, size);
         return ok(content.map(CollectionResponse::new));
+    }
+
+
+    @GetMapping("/{id}/notes")
+    @SecurityRequirement(name = "token")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Operation(summary = "Returns a list of notes from current collection with paging")
+    public ResponseEntity<Page<NoteResponse>> getNotesById(@PathVariable Long id, Optional<Integer> page, Optional<Integer> size) {
+      var response = noteService.findByCollectionId(id, page, size);
+      return ok(response.map(NoteResponse::new));
     }
 
     @GetMapping("/{id}")
@@ -86,7 +90,7 @@ public class CollectionsController {
       var collection = collectionService.create(props);
       LOGGER.info(collection.toString());
       var response = new CollectionResponse(collection);
-      return created(response, "api/courses");
+      return created(response, "api/collections");
     }
 
     @PutMapping("/{id}/addComment")
@@ -98,7 +102,7 @@ public class CollectionsController {
     )
     public ResponseEntity<Comment> addOrUpdateComment(@PathVariable Long id,  @Validated @RequestBody CreateCommentProps createProps) {
       var comment = collectionService.updateByAddingComment(id, createProps);
-      return created(comment, "/api/courses/" + id + "/addComment");
+      return created(comment, "/api/collections/" + id + "/addComment");
     }
 
     @PutMapping("/{id}/addImage")
@@ -110,8 +114,6 @@ public class CollectionsController {
     )
     public ResponseEntity<Image> addOrUpdateImage(@PathVariable Long id,  @Validated @ModelAttribute CreateImageProps createProps) {
       var image = collectionService.updateByAddingImage(id, createProps);
-      // var response = new  ImageResponse(image);
-      LOGGER.info(image.toString());
       return created(image, "/api/collections/" + id + "/addImage");
     }
 
@@ -132,27 +134,18 @@ public class CollectionsController {
     @GetMapping("/{id}/comments")
     @SecurityRequirement(name = "token")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @Operation(summary = "Returns a list of courses with paging")
-    public ResponseEntity<Page<Comment>> getCommentsById(
-        @PathVariable Long id, 
-         Optional<Integer> page, 
-        Optional<Integer> size 
-    )  {
+    @Operation(summary = "Returns a list of comments from current collection with paging")
+    public ResponseEntity<Page<Comment>> getCommentsById(@PathVariable Long id, Optional<Integer> page, Optional<Integer> size)  {
       var response = collectionService.findCommentsById(id, page, size);
-      return created(response, "/api/collections/comments", id);
+      return created(response, "/api/collections/" + id + "/comments");
     }
 
 
-    @GetMapping("/showByKeyword")
+    @GetMapping("/search")
     @SecurityRequirement(name = "token")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @Operation(summary = "Returns a list of courses with paging")
-    public ResponseEntity<Page<CollectionResponse>> getByKeyword(
-        @RequestParam String keyword, 
-         Optional<Integer> page, 
-        Optional<Integer> size 
-    )  {
-      LOGGER.info("keyword: " + keyword);
+    @Operation(summary = "Returns a list of collections matched given keyword with paging")
+    public ResponseEntity<Page<CollectionResponse>> getByKeyword(@RequestParam String keyword, Optional<Integer> page, Optional<Integer> size)  {
       var collections = collectionService.findByKeyword(keyword, page, size);
       return ok(collections.map(CollectionResponse::new));
     }

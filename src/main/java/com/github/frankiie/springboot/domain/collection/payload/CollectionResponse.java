@@ -1,11 +1,9 @@
 package com.github.frankiie.springboot.domain.collection.payload;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.frankiie.springboot.domain.collection.entity.Collection;
 import com.github.frankiie.springboot.domain.collection_image.payload.ImageResponse;
 import com.github.frankiie.springboot.domain.management.model.Entity;
+import com.github.frankiie.springboot.utils.JSON;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -33,4 +31,9 @@ public class CollectionResponse implements Entity {
       return this.id;
     }
   
+    @Override
+    public String toString() {
+      return JSON.stringify(this);
+    }
+
 }

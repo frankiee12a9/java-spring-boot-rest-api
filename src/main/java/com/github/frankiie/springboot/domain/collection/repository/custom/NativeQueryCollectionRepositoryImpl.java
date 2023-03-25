@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.github.frankiie.springboot.domain.collection.entity.Collection;
 import com.github.frankiie.springboot.domain.collection.payload.UpdateCollectionProps;
@@ -95,9 +94,9 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
 
       List<Tuple> content = query.getResultList();
 
-      var courses = content.stream().map(Collection::from).toList();
+      var collections = content.stream().map(Collection::from).toList();
 
-      return Page.of(courses, pageNumber, pageSize, count);
+      return Page.of(collections, pageNumber, pageSize, count);
     }
 
     @Override
@@ -119,16 +118,14 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
 
       List<Tuple> content = query.getResultList();
 
-      var courses = content.stream().map(Collection::from).toList();
+      var collections = content.stream().map(Collection::from).toList();
 
-      return Page.of(courses, pageNumber, pageSize, count);
+      return Page.of(collections, pageNumber, pageSize, count);
     }
 
     @javax.transaction.Transactional
     @Override
     public Optional<Collection> updateById(Long id, UpdateCollectionProps updateProps) {
-      LOGGER.info("props: " + updateProps);
-
       String updateQuery = "UPDATE collection SET ";
       if (updateProps.getTitle() != null) {
           updateQuery += "collection_title = :collection_title";
@@ -159,14 +156,12 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
         e.printStackTrace();
       }
       
-      var query2 = manager
+      var findQuery = manager
               .createNativeQuery(FIND_BY_ID_DETAILS, Tuple.class)
                   .setParameter("collection_id", id);
 
-      LOGGER.info("FIND_BY_ID_DETAILS: " + query2);
-
       try {
-          var tuple = (Tuple) query2.getSingleResult();
+          var tuple = (Tuple) findQuery.getSingleResult();
           return of(Collection.from(tuple));
       } catch (NoResultException exception) {
           return empty();
