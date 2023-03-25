@@ -10,9 +10,7 @@ import com.github.frankiie.springboot.beanconfig.BeanConfiguration;
 import com.github.frankiie.springboot.beanconfig.BeanLister;
 import com.github.frankiie.springboot.beanconfig.MyBean;
 import com.github.frankiie.springboot.configurations.DatabaseInitializer;
-import com.github.frankiie.springboot.domain.role.entity.Role;
 import com.github.frankiie.springboot.domain.role.repository.RoleRepository;
-import com.github.frankiie.springboot.domain.user.entity.User;
 import com.github.frankiie.springboot.domain.user.repository.UserRepository;
 
 import java.util.List;
@@ -30,9 +28,9 @@ public class Application implements CommandLineRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseInitializer.class);
 
     public static void main(String... args) throws Exception {
+      // TEST BEAN
       ApplicationContext ctx = new AnnotationConfigApplicationContext(BeanLister.class);
       BeanLister beanLister = ctx.getBean(BeanLister.class);
-
       beanLister.printAllBeans();
 
       ApplicationContext ctx2 = new AnnotationConfigApplicationContext(BeanConfiguration.class);
@@ -54,50 +52,12 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-      var userRole = roleRepository.findOptionalByInitials("USER");
-      var admRole = roleRepository.findOptionalByInitials("ADMIN");
-      
-      if (!userRole.isPresent())  {
-        var newR = new Role("USER");
-        newR.setName("USER");
-        newR.setDescription("Application user");
-        LOGGER.info("> Preloading [userRole]: " + 
-          roleRepository.save(newR)
-        );
-      }
-
-      if (!admRole.isPresent())  {
-        Role _admRole = new Role("ADMIN");
-        _admRole.setName("ADM");
-        _admRole.setDescription("Application admin, manage everything.");
-        LOGGER.info("> Preloading [adminRole]: " + 
-          roleRepository.save(_admRole)
-        );
-      }
-
-      // User admin = new User("admin", "admin@gmail.com", "@kien12a99");
       userRepository.findByEmail("admin@gmail.com").ifPresent(a -> {
-        // a.setRoles(List.of(admRole.get())); 
-        // userRepository.save(a);
         LOGGER.info("Admin roles: " + a.getRoles());
       });
       userRepository.findByEmail("user@gmail.com").ifPresent(a -> {
-        // a.setRoles(List.of(userRole.get())); 
-        // userRepository.save(a);
         LOGGER.info("User roles: " + a.getRoles());
       });
-      // if (!_admin.isPresent() && admRole.isPresent()) {
-      //   admin.setRoles(List.of(admRole.get()));
-      //   LOGGER.info("> Preloading [admin]: " + userRepository.save(admin));
-      // } else {
-      //   LOGGER.info("> FAILED Preloading [admin]: " + _admin);
-      // }
-
-      // User user = new User("user", "user@gmail.com", "@kien12a99");
-      // if (!userRepository.findByEmail(user.getEmail()).isPresent() && userRole.isPresent()) {
-      //   user.setRoles(List.of(userRole.get()));
-      //   LOGGER.info("> Preloading: " + userRepository.save(user));
-      // }
     }
 
 }
