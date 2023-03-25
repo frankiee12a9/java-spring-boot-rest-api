@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.github.frankiie.springboot.domain.collection.payload.UpdateCollectionProps;
+import com.github.frankiie.springboot.domain.collection_image.entity.Image;
 import com.github.frankiie.springboot.domain.collection_note.entity.Note;
 import com.github.frankiie.springboot.domain.collection_note.repository.custom.NativeQueryNoteRepository;
 import com.github.frankiie.springboot.domain.collection_note.repository.springdata.SpringDataNoteRepository;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Repository
 public class NoteRepositoryImpl implements NoteRepository {
-
     @Autowired private final NativeQueryNoteRepository nativeQuery;
     @Autowired private final SpringDataNoteRepository springData;
 
@@ -30,6 +30,11 @@ public class NoteRepositoryImpl implements NoteRepository {
     @Override
     public Page<Note> findByKeyword(Pageable pageable, String keyword) {
       return nativeQuery.findByKeyword(pageable, keyword);
+    }
+
+    @Override
+    public Page<Image> findImagesById(Long id, Pageable pageable) {
+      return nativeQuery.findImagesById(id, pageable);
     }
 
     @Override
@@ -64,6 +69,16 @@ public class NoteRepositoryImpl implements NoteRepository {
     @Override
     public Note save(Note note) {
       return springData.save(note);
+    }
+
+    @Override
+    public Page<Note> findByCollectionId(Long collectionId, Pageable pageable) {
+      return nativeQuery.findByCollectionId(collectionId, pageable);
+    }
+
+    @Override
+    public Page<Note> findManyWithFilter(String filter, Pageable pageable) {
+      return nativeQuery.findManyWithFilter(filter, pageable);
     }
   
 }

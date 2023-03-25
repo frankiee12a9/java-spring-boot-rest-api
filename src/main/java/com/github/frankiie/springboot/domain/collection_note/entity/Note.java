@@ -2,7 +2,9 @@ package com.github.frankiie.springboot.domain.collection_note.entity;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,13 +28,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.frankiie.springboot.domain.collection.entity.Collection;
 import com.github.frankiie.springboot.domain.collection_image.entity.Image;
 import com.github.frankiie.springboot.domain.collection_note.payload.CreateNoteProps;
-import com.github.frankiie.springboot.domain.course.entity.Course;
+import com.github.frankiie.springboot.domain.collection_note.payload.UpdateNoteProps;
 import com.github.frankiie.springboot.domain.management.entity.Auditable;
 import com.github.frankiie.springboot.domain.user.entity.User;
 
-import groovyjarjarantlr4.v4.parse.ANTLRParser.qid_return;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.of;
@@ -41,8 +43,9 @@ import java.math.BigInteger;
 
 import static com.github.frankiie.springboot.utils.JSON.stringify;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Setter
+@Getter
+// @EqualsAndHashCode(callSuper = true)
 @Table(name = "note")
 @Entity
 public class Note extends Auditable {
@@ -55,14 +58,11 @@ public class Note extends Auditable {
     @Column(name = "note_desc") private String description;
     @Column(name = "note_link") private String link;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "collection_note", 
-            joinColumns = @JoinColumn(name = "collection_id", referencedColumnName = "id"), 
-            inverseJoinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id"))
+    @ManyToMany(mappedBy = "notes", fetch = FetchType.EAGER)
     private List<Collection> collections = new ArrayList<>();
 
     public Note() {
@@ -111,19 +111,13 @@ public class Note extends Auditable {
     }
 
     public List<Collection> getCollections() {
-      if (this.collections == null) {
-        return null;
-      } else {
-        return new ArrayList<>(this.collections);
-      }
+      return this.collections;
     }
 
-    public void setCollections(List<Collection> collections) {
-      if (collections == null) {
-        this.collections = null;
-      } else {
-        this.collections = Collections.unmodifiableList(collections);
-      }
+    public void merge(UpdateNoteProps updateProps) {
+      this.title = updateProps.getTitle();
+      this.description = updateProps.getDescription();
+      // this.link = updateProps.getLink();
     }
 
     public Long getId() {
@@ -133,9 +127,13 @@ public class Note extends Auditable {
     public static Note from(Tuple tuple) {
       var note = new Note();
       note.setId(tuple.get("id", BigInteger.class));
-      note.setTitle(tuple.get("title", String.class));
-      note.setDescription(tuple.get("desc", String.class));
-      note.setLink(tuple.get("link", String.class));
+      note.setTitle(tuple.get("note_title", String.class));
+      if (tuple.get("note_desc", String.class) != null) {
+        note.setDescription(tuple.get("note_desc", String.class));
+      }
+      if (tuple.get("note_link", String.class) != null) {
+        note.setLink(tuple.get("note_link", String.class));
+      }
 
       return note;
     }
@@ -144,4 +142,5 @@ public class Note extends Auditable {
     public String toString() {
         return stringify(this);
     }
+
 }
