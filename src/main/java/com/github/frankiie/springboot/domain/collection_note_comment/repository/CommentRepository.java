@@ -7,5 +7,4 @@ import com.github.frankiie.springboot.domain.management.repository.SoftDeleteRep
 
 @Repository
 public interface CommentRepository extends SoftDeleteRepository<Comment> {
-  
 }

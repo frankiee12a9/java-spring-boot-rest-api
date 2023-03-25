@@ -19,17 +19,18 @@ import com.github.frankiie.springboot.domain.collection.entity.Collection;
 import com.github.frankiie.springboot.domain.collection_note_comment.payload.CreateCommentProps;
 import com.github.frankiie.springboot.domain.management.entity.Auditable;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import static java.util.Optional.ofNullable;
 
-@Data
+@Setter
+@Getter
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "comment")
 @Entity
 public class Comment extends Auditable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,8 +38,8 @@ public class Comment extends Auditable {
     @Column(name = "message") private String message;
 
     @JsonIgnore
-    @JoinColumn(name = "collection_id", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "collection_id")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Collection collection;
 
     public Comment() {

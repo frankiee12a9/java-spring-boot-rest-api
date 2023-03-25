@@ -8,8 +8,6 @@ import lombok.Data;
 
 @Data
 public class CreateCommentProps {
-    @NotEmpty(message = "")
-    private String message;
-    
+    @NotEmpty(message = "") private String message;
     Collection collection;
 }

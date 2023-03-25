@@ -11,10 +11,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class CommentService {
-
     @Autowired private final CommentRepository commentRepository;
 
     public Comment create(Comment comment) {
       return commentRepository.save(comment); 
     }
+
 }

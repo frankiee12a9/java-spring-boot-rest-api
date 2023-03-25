@@ -11,7 +11,6 @@ import lombok.Getter;
 @Getter
 @Schema(name = "CommentResponse", requiredProperties = {"id", "message"})
 public class CommentResponse implements Entity {
-
     private Long id;
     private String message;
 
