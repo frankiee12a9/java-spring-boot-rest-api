@@ -9,13 +9,12 @@ import lombok.Getter;
 @Getter
 @Schema(name = "CommentResponse", requiredProperties = {"id", "image_url"})
 public class ImageResponse implements Entity {
-
     Long id;
-    private String url; 
+    String image_url; 
 
     public ImageResponse(Image image) {
       this.id = image.getId(); 
-      this.url = image.getUrl();
+      this.image_url = image.getUrl();
     }
 
     public Long getId() {

@@ -10,9 +10,7 @@ import lombok.Data;
 
 @Data
 public class CreateImageProps {
-    @NotNull
-    MultipartFile file;
-
+    @NotNull MultipartFile file;
     Collection collection;
     
     public void setCollection(Collection collection) {

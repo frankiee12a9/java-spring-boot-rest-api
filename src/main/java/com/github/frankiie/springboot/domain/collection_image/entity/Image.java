@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Tuple;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.frankiie.springboot.domain.collection.entity.Collection;
@@ -16,15 +17,17 @@ import com.github.frankiie.springboot.domain.collection_image.payload.CreateImag
 import com.github.frankiie.springboot.domain.collection_note.entity.Note;
 import com.github.frankiie.springboot.domain.management.entity.Auditable;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import static java.util.Optional.ofNullable;
 import static com.github.frankiie.springboot.utils.JSON.stringify;
 
 import java.math.BigInteger;
 
-@Data
+@Setter
+@Getter
 @EqualsAndHashCode(callSuper = true)
 @Entity
 public class Image extends Auditable {
@@ -71,6 +74,14 @@ public class Image extends Auditable {
     @Override
     public Long getId() {
       return id;
+    }
+
+    public static Image from(Tuple tuple) {
+      var image = new Image();
+      image.setId(tuple.get("id", BigInteger.class));
+      image.setUrl(tuple.get("image_url", String.class));
+
+      return image;
     }
 
     @Override
