@@ -24,31 +24,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.frankiie.springboot.domain.collection.entity.Collection;
-import com.github.frankiie.springboot.domain.collection.payload.CollectionResponse;
-import com.github.frankiie.springboot.domain.collection.payload.CreateCollectionProps;
-import com.github.frankiie.springboot.domain.collection.payload.UpdateCollectionProps;
-import com.github.frankiie.springboot.domain.collection.service.CollectionService;
-import com.github.frankiie.springboot.domain.collection_image.entity.Image;
 import com.github.frankiie.springboot.domain.collection_image.payload.CreateImageProps;
 import com.github.frankiie.springboot.domain.collection_image.payload.ImageResponse;
 import com.github.frankiie.springboot.domain.collection_note.entity.Note;
 import com.github.frankiie.springboot.domain.collection_note.payload.CreateNoteProps;
+import com.github.frankiie.springboot.domain.collection_note.payload.NoteResponse;
+import com.github.frankiie.springboot.domain.collection_note.payload.UpdateNoteProps;
 import com.github.frankiie.springboot.domain.collection_note.service.NoteService;
 import com.github.frankiie.springboot.domain.collection_note_comment.entity.Comment;
 import com.github.frankiie.springboot.domain.collection_note_comment.payload.CreateCommentProps;
 import com.github.frankiie.springboot.domain.pagination.model.Page;
 
-import static com.github.frankiie.springboot.utils.Responses.created;
-import static com.github.frankiie.springboot.utils.Responses.ok;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static com.github.frankiie.springboot.utils.Responses.created;
-import static com.github.frankiie.springboot.utils.Responses.ok;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static com.github.frankiie.springboot.constants.VALUES.DEFAULT_PAGE_NUMBER;
-import static com.github.frankiie.springboot.constants.VALUES.DEFAULT_PAGE_SIZE;
+import static com.github.frankiie.springboot.utils.Responses.*;
+import static org.springframework.http.HttpStatus.*;
+import static com.github.frankiie.springboot.constants.VALUES.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -61,23 +50,49 @@ public class NotesController {
 
     @GetMapping
     @SecurityRequirement(name = "token")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @Operation(summary = "Returns a list of courses with paging")
-    public ResponseEntity<Page<Note>> getMany(Optional<Integer> page, Optional<Integer> size) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Operation(summary = "Returns a list of notes with paging")
+    public ResponseEntity<Page<NoteResponse>> getMany(Optional<Integer> page, Optional<Integer> size) {
         var content = noteService.findMany(page, size);
-        // return ok(content.map(Note::new));
+        return ok(content.map(NoteResponse::new));
+    }
+
+    @GetMapping("/sort")
+    @SecurityRequirement(name = "token")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Operation(summary = "Returns a list of notes with paging based on filter (name, created_at, used_at) provided")
+    public ResponseEntity<Page<NoteResponse>> getByFilter(@RequestParam String filter, Optional<Integer> page, Optional<Integer> size) {
+        var content = noteService.findManyWithFilter(filter, page, size);
+        return ok(content.map(NoteResponse::new));
+    }
+
+    @GetMapping("/{id}/images")
+    @SecurityRequirement(name = "token")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Operation(summary = "Returns a list of images from current note with paging")
+    public ResponseEntity<Page<ImageResponse>> getImages(@PathVariable Long id, Optional<Integer> page, Optional<Integer> size) {
+         var response = noteService.findImagesById(id, page, size);
+        return ok(response.map(ImageResponse::new));
+    }
+
+    @GetMapping("/search")
+    @SecurityRequirement(name = "token")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Operation(summary = "Returns a list of notes containing given keyword with paging")
+    public ResponseEntity<Page<NoteResponse>> getImages(@RequestParam String keyword, Optional<Integer> page, Optional<Integer> size) {
+         var response = noteService.findByKeyword(keyword, page, size);
+        return ok(response.map(NoteResponse::new));
     }
 
     @GetMapping("/{id}")
     @SecurityRequirement(name = "token")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @Operation(summary = "")
-    public ResponseEntity<Note> getOne(@PathVariable Long id) {
+    public ResponseEntity<NoteResponse> getOne(@PathVariable Long id) {
       var note = noteService.findById(id);
-      // var response = new CollectionResponse(collection);
-      return ok(note);
+      var response = new NoteResponse(note);
+      return ok(response);
     }
-
 
     @PostMapping
     @ResponseStatus(NO_CONTENT)
@@ -88,7 +103,31 @@ public class NotesController {
     )
     public ResponseEntity<Note> save(@Validated @RequestBody CreateNoteProps createProps) {
       var response = noteService.create(createProps);
-      LOGGER.info(response.toString());
       return created(response, "api/notes");
     }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(NO_CONTENT)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Operation(
+        summary = "",
+        description = ""
+    )
+    public ResponseEntity<NoteResponse> save(@PathVariable Long id, @Validated @RequestBody UpdateNoteProps updateProps) {
+      var note = noteService.updateById(id, updateProps);
+      return created(new NoteResponse(note), "api/notes");
+    }
+
+    @PutMapping("/{id}/addImage")
+    @ResponseStatus(NO_CONTENT)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @Operation(
+        summary = "",
+        description = ""
+    )
+    public ResponseEntity<ImageResponse> updateOrAddImages(@PathVariable Long id, @ModelAttribute CreateImageProps createProps) {
+      var note = noteService.updateByAddingImage(id, createProps);
+      return created(new ImageResponse(note), "api/notes");
+    }
+
 }
