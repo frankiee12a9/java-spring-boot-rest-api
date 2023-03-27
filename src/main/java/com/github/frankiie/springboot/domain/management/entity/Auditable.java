@@ -19,9 +19,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.frankiie.springboot.domain.management.model.Entity;
 import com.github.frankiie.springboot.domain.user.entity.User;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 @MappedSuperclass
 public abstract class Auditable implements Entity {
-    
     @Override
     public abstract Long getId();
 
@@ -37,11 +41,8 @@ public abstract class Auditable implements Entity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @Column(name = "from_at")
-    private LocalDateTime fromAt;
-
-    @Column(name = "to_at")
-    private LocalDateTime toAt;
+    @Column(name = "used_at")
+    private LocalDateTime usedAt;
     
     @JoinColumn(name = "created_by")
     @ManyToOne(optional = true, fetch = LAZY)
@@ -97,6 +98,14 @@ public abstract class Auditable implements Entity {
         this.deletedAt = deletedAt;
     }
 
+    public LocalDateTime getUsedAt() {
+      return this.usedAt;
+    }
+
+    public void setUsedAt(LocalDateTime usedAt) {
+      this.usedAt = usedAt;
+    }
+
     public Boolean isActive() {
         return this.active;
     }
@@ -108,6 +117,7 @@ public abstract class Auditable implements Entity {
     @PrePersist
     private void save() {
         createdAt = now();
+        usedAt = now();
         createdBy = authorized()
         .map(authorized -> new User(authorized.getId()))
             .orElse(null);
@@ -116,8 +126,10 @@ public abstract class Auditable implements Entity {
     @PreUpdate
     private void update() {
         updatedAt = now();
+        usedAt = now();
         updatedBy = authorized()
         .map(authorized -> new User(authorized.getId()))
             .orElse(null);
     }
+
 }
