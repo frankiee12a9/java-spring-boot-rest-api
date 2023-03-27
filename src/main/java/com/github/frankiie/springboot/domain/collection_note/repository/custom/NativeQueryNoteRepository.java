@@ -12,9 +12,10 @@ import java.util.Optional;
 @Repository
 public interface NativeQueryNoteRepository {
     Optional<Note> findById(Long id);
-    // NOTE: this might me moved to `Comment` service
+    Optional<Note> findByIdAndFetchImages(Long id);
+    // note: this might me moved to `Comment` service
     Page<Note> findByCollectionId(Long collectionId, Pageable pageable);  
-    // NOTE: this might need to be moved to `Comment` service
+    // note: this might need to be moved to `Comment` service
     Page<Image> findImagesById(Long id, Pageable pageable);  
     Page<Note> findByKeyword(Pageable pageable, String keyword);
     Page<Note> findMany(Pageable pageable);

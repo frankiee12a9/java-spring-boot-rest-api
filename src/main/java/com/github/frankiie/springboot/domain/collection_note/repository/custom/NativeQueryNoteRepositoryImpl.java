@@ -40,6 +40,19 @@ public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository 
           return empty();
       }
     }
+
+    @Override
+    public Optional<Note> findByIdAndFetchImages(Long id) {
+      var query = manager
+              .createNativeQuery(NoteQueries.FIND_BY_ID_AND_FETCH_IMAGES, Tuple.class)
+                  .setParameter("note_id", id);
+      try {
+          var tuple = (Tuple) query.getSingleResult();
+          return of(Note.fromWithImages(tuple));
+      } catch (NoResultException exception) {
+          return empty();
+      }
+    }
     
     @Override
     @SuppressWarnings("unchecked")
@@ -114,6 +127,7 @@ public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository 
     @Override
     @SuppressWarnings("unchecked")
     public Page<Note> findManyWithFilter(String filter, Pageable pageable) {
+      LOGGER.info(">> findManyWithFilter:");
       var query = manager
               .createNativeQuery(NoteQueries.FIND_MANY_WITH_FILTER, Tuple.class)
               .setParameter("filter", filter);

@@ -1,5 +1,7 @@
 package com.github.frankiie.springboot.domain.collection_note.payload;
 
+import com.github.frankiie.springboot.domain.collection_image.entity.Image;
+import com.github.frankiie.springboot.domain.collection_image.payload.ImageResponse;
 import com.github.frankiie.springboot.domain.collection_note.entity.Note;
 import com.github.frankiie.springboot.domain.management.model.Entity;
 import com.github.frankiie.springboot.utils.JSON;
@@ -9,6 +11,9 @@ import lombok.Getter;
 
 import static com.github.frankiie.springboot.utils.JSON.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Schema(name = "NoteResponse", requiredProperties = {"id", "title", "description", "image"})
 public class NoteResponse implements Entity {
@@ -16,18 +21,14 @@ public class NoteResponse implements Entity {
     String title;
     String description;
     String link;
-    // ImageResponse image;
-    // List<ImageResponse> images = new ArrayList<>();
+    List<String> images;
 
     public NoteResponse(Note note) {
       this.id = note.getId();
       this.title = note.getTitle();
       this.description = note.getDescription();
       this.link = note.getLink();
-      // if (note.getImages().size() > 0) {
-      //   images.addAll(note.getImages().stream().map(ImageResponse::new).toList());
-      //   note.getImages().stream().map(ImageResponse::new);
-      // }
+      this.images = note.getImages().stream().map(Image::getUrl).toList();
     }
 
     @Override

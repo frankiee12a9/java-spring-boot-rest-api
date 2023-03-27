@@ -17,17 +17,27 @@ public  class NoteQueries {
             n.id = :note_id
     """;
 
-    public final static String FIND_BY_ID_AND_FETCH_IMAGES = """
+    public final static String FIND_BY_ID_AND_FETCH_IMAGES = """    
+        WITH images_cte AS (
+            select 
+                i.note_id, 
+                string_agg(i.image_url, ',') as image_urls
+            FROM 
+                image i
+            GROUP BY 
+                i.note_id
+        )
+
         SELECT 
             n.id, 
             n.note_title, 
-            n.note_desc,
-            i.id AS i_id, 
-            id.image_url
+            n.note_desc, 
+            n.note_link, 
+            i.image_urls
         FROM 
-            note n
-        JOIN 
-            image i ON c.id = i.note_id
+            note n 
+        LEFT JOIN 
+            images_cte i ON n.id = i.note_id
         WHERE 
             n.id = :note_id
     """;
@@ -135,11 +145,12 @@ public  class NoteQueries {
     """;
 
     public static final String COUNT_MANY = """
-        select
+        SELECT
             count(n.id)
-        from
+        FROM
             note n
-        where n.active is true                                                                           
+        WHERE 
+            n.active is true                                                                           
     """;
     
     /**
@@ -153,30 +164,37 @@ public  class NoteQueries {
             n.note_link
         FROM 
             note n
-        order by
-            case when :filter = 'title' then n.note_title end,
-            case when :filter = 'created_at' then n.created_at end,
-            case when :filter = 'used_at' then n.used_at end
+        ORDER BY
+            CASE WHEN :filter = 'title' THEN n.note_title END,
+            CASE WHEN :filter = 'created_at' THEN n.created_at END,
+            CASE WHEN :filter = 'used_at' THEN n.used_at END
     """;
 
     public final static String COUNT_MANY_WITH_FILTER = """
-        SELECT 
-            count(n.id)
+        WITH filtered_notes AS (
+          SELECT 
+            n.id, 
+            n.note_title, 
+            n.note_desc, 
+            n.note_link
         FROM 
             note n
-        order by
-            CASE WHEN :filter = 'title' THEN n.note_title end,
-            CASE WHEN :filter = 'created_at' THEN n.created_at end,
-            CASE WHEN :filter = 'used_at' THEN n.used_at end
-    """;
-
+        ORDER BY
+            CASE WHEN :filter = 'title' THEN n.note_title END,
+            CASE WHEN :filter = 'created_at' THEN n.created_at END,
+            CASE WHEN :filter = 'used_at' THEN n.used_at END
+        )
+        SELECT COUNT(*) FROM filtered_notes;
+      """;
+        
     public static final String COUNT_ACTIVE_COLLECTION_COMMENTS = """
-        select
+        SELECT
             count(c.id)
-        from
+        FROM
             comment c
-        where 
-            c.active is true AND c.collection_id = :collection_id                                                                           
+        WHERE 
+            c.active is true AND 
+            c.collection_id = :collection_id                                                                           
     """;
 
     public static String UPDATE_BY_TITLE_OR_DESCRIPTION_AND_RETURN = """

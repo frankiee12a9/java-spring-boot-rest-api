@@ -39,7 +39,13 @@ public class NoteRepositoryImpl implements NoteRepository {
 
     @Override
     public Optional<Note> findById(Long id) {
-      return nativeQuery.findById(id);
+      return springData.findById(id);
+      // return nativeQuery.findById(id); // note: same issue with the CollectionRepository.findById()
+    }
+
+    @Override
+    public Optional<Note> findByIdAndFetchImages(Long id) {
+      return nativeQuery.findByIdAndFetchImages(id); 
     }
 
     @Override

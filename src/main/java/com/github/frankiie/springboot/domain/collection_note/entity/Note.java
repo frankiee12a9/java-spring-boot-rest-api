@@ -30,9 +30,7 @@ import com.github.frankiie.springboot.domain.collection_image.entity.Image;
 import com.github.frankiie.springboot.domain.collection_note.payload.CreateNoteProps;
 import com.github.frankiie.springboot.domain.collection_note.payload.UpdateNoteProps;
 import com.github.frankiie.springboot.domain.management.entity.Auditable;
-import com.github.frankiie.springboot.domain.user.entity.User;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -58,12 +56,12 @@ public class Note extends Auditable {
     @Column(name = "note_desc") private String description;
     @Column(name = "note_link") private String link;
 
-    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Image> images = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "notes", fetch = FetchType.EAGER)
-    private List<Collection> collections = new ArrayList<>();
+    private Set<Collection> collections = new HashSet<>();
 
     public Note() {
     }
@@ -110,14 +108,13 @@ public class Note extends Auditable {
               .orElse(null);
     }
 
-    public List<Collection> getCollections() {
+    public Set<Collection> getCollections() {
       return this.collections;
     }
 
     public void merge(UpdateNoteProps updateProps) {
       this.title = updateProps.getTitle();
       this.description = updateProps.getDescription();
-      // this.link = updateProps.getLink();
     }
 
     public Long getId() {
@@ -134,6 +131,28 @@ public class Note extends Auditable {
       if (tuple.get("note_link", String.class) != null) {
         note.setLink(tuple.get("note_link", String.class));
       }
+
+      return note;
+    }
+
+    public static Note fromWithImages(Tuple tuple) {
+      var note = new Note();
+      note.setId(tuple.get("id", BigInteger.class));
+      note.setTitle(tuple.get("note_title", String.class));
+
+      if (tuple.get("note_desc", String.class) != null) {
+        note.setDescription(tuple.get("note_desc", String.class));
+      }
+      if (tuple.get("note_link", String.class) != null) {
+        note.setLink(tuple.get("note_link", String.class));
+      }
+
+      note.setImages(ofNullable(tuple.get("image_urls", String.class))
+                .map(roles -> of(roles.split(","))
+                        .map(Image::new).toList())
+                .orElse(List.of()));
+
+      LOGGER.info("note.from(): " + note);
 
       return note;
     }
