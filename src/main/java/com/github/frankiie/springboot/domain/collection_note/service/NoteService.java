@@ -37,7 +37,6 @@ public class NoteService {
 
     @Autowired private final NoteRepository noteRepository;
     @Autowired private final CollectionRepository collectionRepository;
-    @Autowired private final ImageRepository imageRepository;
     
     @Autowired private final ImageService imageService;
 
@@ -47,6 +46,11 @@ public class NoteService {
 
     public Note findById(Long id) {
       return noteRepository.findById(id)
+        .orElseThrow(() -> Responses.notFound("note not found"));
+    }
+
+    public Note findByIdAndFetchImages(Long id) {
+      return noteRepository.findByIdAndFetchImages(id)
         .orElseThrow(() -> Responses.notFound("note not found"));
     }
 
@@ -79,20 +83,19 @@ public class NoteService {
       var note = findById(id);
 
       var image = imageService.uploadImage(imageProps);
+      image.setNote(note);
+      imageService.save(image);
 
       note.getImages().add(image);
-
-      image.setNote(note);
       noteRepository.save(note);
+
       return image;
-      // return note;
     }
 
     public Note updateById(Long id, UpdateNoteProps updateProps) {
       var note = findById(id);
 
       note.merge(updateProps);
-
       noteRepository.save(note);
       return note;
     }
