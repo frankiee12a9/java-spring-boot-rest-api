@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.github.frankiie.springboot.domain.session.model.Authorized;
 import com.github.frankiie.springboot.domain.user.repository.UserRepository;
-import com.github.frankiie.springboot.middlewares.AuthorizationMiddleware;
-import com.github.frankiie.springboot.security.UserPrincipal;
 import com.github.frankiie.springboot.utils.Authorization;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +40,6 @@ public class SessionService implements UserDetailsService {
                     .orElseThrow(() -> new UsernameNotFoundException(message(INVALID_USERNAME)));
         
         return new Authorized(user);
-        // return UserPrincipal.create(user);
     }
 
     public static void authorize(HttpServletRequest request, HttpServletResponse response) {
@@ -65,6 +62,10 @@ public class SessionService implements UserDetailsService {
         } catch (Exception exception) {
             expired(response);
         }
+    }
+
+    public static Long serviceOwnerId() {
+      return authorized().map(authorized -> authorized.getId()).orElse(null);
     }
 
     public static Optional<Authorized> authorized() {
