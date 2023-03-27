@@ -114,25 +114,9 @@ public class User extends Auditable implements Serializable, Addressable {
                 .orElse(null);
     }
     
-  //   public List<Role> getRoles() {
-  //       return roles;
-  //   }
-
-  //   public void setRoles(List<Role> roles) {
-  //       this.roles = roles;
-  //   }
-
-  public List<Role> getRoles() {
-		return roles == null ? null : new ArrayList<>(roles);
-	}
-
-	public void setRoles(List<Role> roles) {
-		if (roles == null) {
-			this.roles = null;
-		} else {
-			this.roles = java.util.Collections.unmodifiableList(roles);
-		}
-	}
+    public List<Role> getRoles() {
+        return roles;
+    }
 
     @Override
     public Long getId() {
@@ -173,7 +157,9 @@ public class User extends Auditable implements Serializable, Addressable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+          return false;
+        }
         User user = (User) o;
         return id != null && Objects.equals(id, user.id);
     }
