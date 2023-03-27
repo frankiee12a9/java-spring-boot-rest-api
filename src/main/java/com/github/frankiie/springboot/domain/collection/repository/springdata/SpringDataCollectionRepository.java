@@ -1,12 +1,10 @@
 package com.github.frankiie.springboot.domain.collection.repository.springdata;
 
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.frankiie.springboot.domain.collection.entity.Collection;
-import com.github.frankiie.springboot.domain.course.entity.Course;
 import com.github.frankiie.springboot.domain.management.repository.SoftDeleteRepository;
 
 import java.util.Optional;
@@ -22,8 +20,8 @@ public interface SpringDataCollectionRepository extends SoftDeleteRepository<Col
 
     @Override
     @Transactional
-    default void delete(Collection user) {
-        deleteById(user.getId());
+    default void delete(Collection collection) {
+        deleteById(collection.getId());
     }
 
     @Override
@@ -31,14 +29,5 @@ public interface SpringDataCollectionRepository extends SoftDeleteRepository<Col
     default void deleteAll(Iterable<? extends Collection> entities) {
         entities.forEach(entity -> deleteById(entity.getId()));
     }
-
-    // Boolean existsByEmail(String email);
-
-    // @Query("""
-    //     select user from #{#entityName} user
-    //     left join fetch user.roles
-    //     where user.id = ?1 
-    // """)
-    // Optional<Course> findByIdFetchRoles(Long id);
 
 }

@@ -9,11 +9,8 @@ import lombok.Data;
 
 @Data
 public class CreateCollectionProps {
-    @NotEmpty(message = "")
-    private String title;
-
+    @NotEmpty private String title;
     private String description;  
-
     private MultipartFile file;  
     
     public MultipartFile getFile() {
@@ -28,4 +25,5 @@ public class CreateCollectionProps {
     public String toString() {
       return JSON.stringify(this);
     }
+
 }

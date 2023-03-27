@@ -22,5 +22,5 @@ public interface CollectionRepository {
     void deleteById(Long id);
     void deleteAll(Iterable<? extends Collection> entities);
     void delete(Collection collection);
-    Collection save(Collection Course);
+    Collection save(Collection collection);
 }

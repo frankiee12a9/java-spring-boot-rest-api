@@ -37,7 +37,6 @@ public class CollectionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CollectionService.class);
 
     @Autowired private final CollectionRepository collectionRepository;
-    @Autowired private final ImageRepository imageRepository;
 
     @Autowired private final ImageService imageService;
     @Autowired private final CommentService commentService;
@@ -77,6 +76,7 @@ public class CollectionService {
           .orElseThrow(() -> Responses.notFound("collection not found"));
 
       createProps.setCollection(collection);
+
       var newComment = new Comment(createProps);
       commentService.create(newComment);
 
@@ -88,33 +88,26 @@ public class CollectionService {
       var collection = collectionRepository.findById(id)
           .orElseThrow(() -> Responses.notFound("collection not found"));
 
-      var newImage = imageService.uploadImage(createProps);
-      newImage.setCollection(collection);
-      collection.setImage(newImage); 
+      var image = imageService.uploadImage(createProps);
+      image.setCollection(collection);
 
-      imageRepository.save(newImage);
-
-      // as the ER between `image` and `collection` is bidirectional one-to-one, 
-      // we need to update both sides
+      collection.setImage(image); 
       collectionRepository.save(collection);
 
-      return newImage;
+      return image;
     }
 
-    public boolean deleteOne(Long id) {
-      var collection = findById(id);
-      var comments = collectionRepository.findCommentsById(id, null);
-      comments.getContent().forEach(cm -> cm.setCollection(null));
-      collection.getComments().clear();
-      collectionRepository.save(collection);
-      return true;
-    }
+    // public boolean deleteOne(Long id) {
+    //   var collection = findById(id);
+    //   var comments = collectionRepository.findCommentsById(id, null);
+    //   comments.getContent().forEach(cm -> cm.setCollection(null));
+    //   collection.getComments().clear();
+    //   collectionRepository.save(collection);
+    //   return true;
+    // }
 
     private Collection save(CreateCollectionProps props) {
       var collection = new Collection(props);
-      // var image = imageService.uploadImage(props.getFile());
-      // collection.setImage(image);
-
       collectionRepository.save(collection);
       return collection;
     }

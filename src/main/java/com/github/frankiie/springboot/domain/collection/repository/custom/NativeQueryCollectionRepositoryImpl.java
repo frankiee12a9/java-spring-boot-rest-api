@@ -1,12 +1,7 @@
 package com.github.frankiie.springboot.domain.collection.repository.custom;
 
-import static com.github.frankiie.springboot.domain.course.repository.custom.CourseQueries.FIND_BY_ID;
-import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.FIND_BY_ID_DETAILS;
-import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.FIND_BY_ID_AND_FETCH_COMMENTS;
-import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.FIND_BY_KEYWORD;
-import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.COUNT_ACTIVE_COLLECTION_COMMENTS;
-import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.FIND_MANY;
-import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.COUNT_ACTIVE_COLLECTIONS;
+import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.*;
+
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
@@ -78,11 +73,12 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
     @SuppressWarnings("unchecked")
     public Page<Collection> findByKeyword(Pageable pageable, String keyword) {
       var query = manager
-                .createNativeQuery(FIND_BY_KEYWORD, Tuple.class)
+                .createNativeQuery(FIND_BY_KEYWORD_AND_GET_A_ASSOCIATION, Tuple.class)
                     .setParameter("keyword", keyword);
 
       var count = ((BigInteger) manager
-          .createNativeQuery(COUNT_ACTIVE_COLLECTIONS)
+          .createNativeQuery(COUNT_BY_KEYWORD_AND_GET_A_ASSOCIATION)
+          .setParameter("keyword", keyword)
           .getSingleResult())
             .longValue();
       

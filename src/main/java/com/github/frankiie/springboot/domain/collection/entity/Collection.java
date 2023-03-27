@@ -32,14 +32,13 @@ import com.github.frankiie.springboot.domain.collection_note.entity.Note;
 import com.github.frankiie.springboot.domain.collection_note_comment.entity.Comment;
 import com.github.frankiie.springboot.domain.management.entity.Auditable;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Stream.of;
 
-import static com.github.frankiie.springboot.utils.JSON.stringify;
+import static com.github.frankiie.springboot.utils.JSON.*;
 
 // note: The @EqualsAndHashCode(callSuper = true) annotation tells Lombok to include the fields of the superclass in the generated equals() 
 // and hashCode() methods. If you’re experiencing a StackOverflowError when updating one of the child entities, it’s possible that there is a circular 
@@ -66,14 +65,14 @@ public class Collection extends Auditable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "collection")
     private Image image;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinTable(name = "collection_note", 
             joinColumns = @JoinColumn(name = "collection_id", referencedColumnName = "id"), 
             inverseJoinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id"))
-    private List<Note> notes = new ArrayList<>();
+    private Set<Note> notes = new HashSet<>();
 
     public Collection() {
     }
@@ -87,7 +86,7 @@ public class Collection extends Auditable {
       this.description = description;
     }
 
-    public Collection(String title, String description, List<Note> notes) {
+    public Collection(String title, String description, Set<Note> notes) {
       this.title = title; 
       this.description = description;
       this.notes = notes;
@@ -98,7 +97,7 @@ public class Collection extends Auditable {
       this.description = props.getDescription();
     }
 
-    public List<Note> getNotes() {
+    public Set<Note> getNotes() {
       return this.notes;
     }
 

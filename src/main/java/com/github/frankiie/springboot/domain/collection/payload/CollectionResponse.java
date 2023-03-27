@@ -11,11 +11,10 @@ import lombok.Getter;
 @Getter
 @Schema(name = "CollectionResponse", requiredProperties = {"id", "title", "description", "image"})
 public class CollectionResponse implements Entity {
-
-    Long id;
-    String title;
-    String description; 
-    ImageResponse image;
+    private Long id;
+    private String title;
+    private String description; 
+    private ImageResponse image;
 
     public CollectionResponse(Collection collection) {
       this.id = collection.getId();

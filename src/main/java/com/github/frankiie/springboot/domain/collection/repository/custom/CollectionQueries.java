@@ -20,7 +20,7 @@ public  class CollectionQueries {
             cm.id AS i_id, cm.message
         FROM 
             collection c
-        LEFT JOIN 
+        JOIN 
             comment cm ON c.id = cm.collection_id
         WHERE 
             c.id = :collection_id
@@ -49,10 +49,61 @@ public  class CollectionQueries {
         FROM 
             collection c
         LEFT JOIN 
-            image i ON c.image_id = i.id
+            image i ON c.id = i.collection_id
         WHERE 
             LOWER(c.collection_title) LIKE CONCAT('%', LOWER(:keyword), '%') OR 
             LOWER(c.collection_desc) LIKE CONCAT('%', LOWER(:keyword), '%')
+    """;
+
+    public final static String COUNT_BY_KEYWORD = """
+        SELECT 
+            count(c.id)
+        FROM 
+            collection c
+        LEFT JOIN 
+            image i ON c.id = i.collection_id
+        WHERE 
+            LOWER(c.collection_title) LIKE CONCAT('%', LOWER(:keyword), '%') OR 
+            LOWER(c.collection_desc) LIKE CONCAT('%', LOWER(:keyword), '%')
+    """;
+
+
+    /**
+     * find records containing given keyword related to `title` or `description` (can handling all case-insensitive).
+     * also, this query will return only the associated entity with latest created_at-record from the associated entity (Image)
+     */
+    public final static String FIND_BY_KEYWORD_AND_GET_A_ASSOCIATION = """
+        SELECT 
+            c.id,
+            c.collection_title,
+            c.collection_desc,
+            i.id AS i_id,
+            i.image_url
+        FROM 
+            collection c
+        LEFT JOIN 
+            image i ON c.id = i.collection_id
+        WHERE 
+            (i.id = (SELECT i.id FROM image i WHERE i.collection_id = c.id 
+              ORDER BY i.created_at DESC LIMIT 1) OR i.id IS NULL) AND 
+              (LOWER(c.collection_title) LIKE CONCAT('%', LOWER(:keyword), '%') OR 
+              LOWER(c.collection_desc) LIKE CONCAT('%', LOWER(:keyword), '%')
+            )
+    """;
+
+    public final static String COUNT_BY_KEYWORD_AND_GET_A_ASSOCIATION = """
+        SELECT 
+            count(c.id)
+        FROM 
+            collection c
+        LEFT JOIN 
+            image i ON c.id = i.collection_id
+        WHERE 
+            (i.id = (SELECT i.id FROM image i WHERE i.collection_id = c.id 
+              ORDER BY i.created_at DESC LIMIT 1) OR i.id IS NULL) AND 
+              (LOWER(c.collection_title) LIKE CONCAT('%', LOWER(:keyword), '%') OR 
+              LOWER(c.collection_desc) LIKE CONCAT('%', LOWER(:keyword), '%')
+            )
     """;
 
     public final static String FIND_MANY = """

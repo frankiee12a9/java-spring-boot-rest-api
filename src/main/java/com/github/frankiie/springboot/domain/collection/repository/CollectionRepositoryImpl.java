@@ -39,7 +39,9 @@ public class CollectionRepositoryImpl implements CollectionRepository {
 
     @Override
     public Optional<Collection> findById(Long id) {
-      return nativeQuery.findById(id);
+      // note: this caused a bug while updating associated entity (Collection_Note)
+      // return nativeQuery.findById(id); 
+      return springData.findById(id);
     }
 
     @Override
@@ -73,6 +75,8 @@ public class CollectionRepositoryImpl implements CollectionRepository {
 
     @Override
     public Optional<Collection> findByIdAndFetchComments(Long id) {
+      // note: if use nativeQuery.findById() in this case, 
+      // it will cause problems when updating the associated `Notes` in the join table `collection_note`
       return nativeQuery.findByIdAndFetchComments(id);
     }
 
