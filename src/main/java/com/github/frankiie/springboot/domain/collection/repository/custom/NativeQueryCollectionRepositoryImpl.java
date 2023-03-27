@@ -24,6 +24,9 @@ import com.github.frankiie.springboot.domain.collection.payload.UpdateCollection
 import com.github.frankiie.springboot.domain.collection_note_comment.entity.Comment;
 import com.github.frankiie.springboot.domain.pagination.model.Page;
 
+import static com.github.frankiie.springboot.domain.session.service.SessionService.*;
+import static java.util.Optional.ofNullable;
+
 @Repository
 public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectionRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(NativeQueryCollectionRepositoryImpl.class);
@@ -34,7 +37,8 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
     public Optional<Collection> findById(Long id) {
         var query = manager
                 .createNativeQuery(FIND_BY_ID_DETAILS, Tuple.class)
-                    .setParameter("collection_id", id);
+                    .setParameter("collection_id", id)
+                    .setParameter("owner_id", serviceOwnerId());
         try {
             var tuple = (Tuple) query.getSingleResult();
             return of(Collection.from(tuple));
@@ -48,11 +52,13 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
     public Page<Comment> findCommentsById(Long id, Pageable pageable) {
        var query = manager
                 .createNativeQuery(FIND_BY_ID_AND_FETCH_COMMENTS, Tuple.class)
-                    .setParameter("collection_id", id);
+                    .setParameter("collection_id", id)
+                    .setParameter("owner_id", serviceOwnerId());
 
        var count = ((BigInteger) manager
           .createNativeQuery(COUNT_ACTIVE_COLLECTION_COMMENTS)
           .setParameter("collection_id", id)
+          .setParameter("owner_id", serviceOwnerId())
           .getSingleResult())
             .longValue();
 
@@ -63,7 +69,6 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
       query.setMaxResults(pageSize);
 
       List<Tuple> content = query.getResultList();
-
       var comments = content.stream().map(Comment::from).toList();
 
       return Page.of(comments, pageNumber, pageSize, count);
@@ -74,11 +79,13 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
     public Page<Collection> findByKeyword(Pageable pageable, String keyword) {
       var query = manager
                 .createNativeQuery(FIND_BY_KEYWORD_AND_GET_A_ASSOCIATION, Tuple.class)
-                    .setParameter("keyword", keyword);
+                    .setParameter("keyword", keyword)
+                    .setParameter("owner_id", serviceOwnerId());
 
       var count = ((BigInteger) manager
           .createNativeQuery(COUNT_BY_KEYWORD_AND_GET_A_ASSOCIATION)
           .setParameter("keyword", keyword)
+          .setParameter("owner_id", serviceOwnerId())
           .getSingleResult())
             .longValue();
       
@@ -89,7 +96,6 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
       query.setMaxResults(pageSize);
 
       List<Tuple> content = query.getResultList();
-
       var collections = content.stream().map(Collection::from).toList();
 
       return Page.of(collections, pageNumber, pageSize, count);
@@ -99,10 +105,12 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
     @SuppressWarnings("unchecked")
     public Page<Collection> findMany(Pageable pageable) {
       var query = manager
-              .createNativeQuery(FIND_MANY, Tuple.class);
+              .createNativeQuery(FIND_MANY, Tuple.class)
+              .setParameter("owner_id", serviceOwnerId());
       
       var count = ((BigInteger) manager
           .createNativeQuery(COUNT_ACTIVE_COLLECTIONS)
+          .setParameter("owner_id", serviceOwnerId())
           .getSingleResult())
             .longValue();
 
@@ -113,7 +121,6 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
       query.setMaxResults(pageSize);
 
       List<Tuple> content = query.getResultList();
-
       var collections = content.stream().map(Collection::from).toList();
 
       return Page.of(collections, pageNumber, pageSize, count);
@@ -134,8 +141,6 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
       }
       updateQuery += " WHERE id = :id";
 
-      LOGGER.info("update query: " + updateQuery);
-
       var query = manager.createNativeQuery(updateQuery);
       query.setParameter("id", id);
 
@@ -154,7 +159,8 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
       
       var findQuery = manager
               .createNativeQuery(FIND_BY_ID_DETAILS, Tuple.class)
-                  .setParameter("collection_id", id);
+              .setParameter("collection_id", id)
+              .setParameter("owner_id", serviceOwnerId());
 
       try {
           var tuple = (Tuple) findQuery.getSingleResult();
@@ -168,7 +174,9 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
     public Optional<Collection> findByIdAndFetchComments(Long id) {
        var query = manager
                 .createNativeQuery(FIND_BY_ID_AND_FETCH_COMMENTS, Tuple.class)
-                    .setParameter("collection_id", id);
+                .setParameter("collection_id", id)
+                .setParameter("owner_id", serviceOwnerId());
+
         try {
             var tuple = (Tuple) query.getSingleResult();
             return of(Collection.from(tuple));

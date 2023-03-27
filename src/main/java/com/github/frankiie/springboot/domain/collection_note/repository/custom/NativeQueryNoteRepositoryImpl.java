@@ -22,17 +22,22 @@ import com.github.frankiie.springboot.domain.collection_image.entity.Image;
 import com.github.frankiie.springboot.domain.collection_note.entity.Note;
 import com.github.frankiie.springboot.domain.pagination.model.Page;
 
+import static com.github.frankiie.springboot.domain.session.service.SessionService.*;
+import static java.util.Optional.ofNullable;
+
 @Repository
 public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(NativeQueryNoteRepositoryImpl.class);
 
     @Autowired EntityManager manager;
 
+    
     @Override
     public Optional<Note> findById(Long id) {
       var query = manager
               .createNativeQuery(NoteQueries.FIND_BY_ID, Tuple.class)
-                  .setParameter("note_id", id);
+                  .setParameter("note_id", id)
+                  .setParameter("owner_id", serviceOwnerId());
       try {
           var tuple = (Tuple) query.getSingleResult();
           return of(Note.from(tuple));
@@ -45,7 +50,8 @@ public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository 
     public Optional<Note> findByIdAndFetchImages(Long id) {
       var query = manager
               .createNativeQuery(NoteQueries.FIND_BY_ID_AND_FETCH_IMAGES, Tuple.class)
-                  .setParameter("note_id", id);
+                  .setParameter("note_id", id)
+                  .setParameter("owner_id", serviceOwnerId());
       try {
           var tuple = (Tuple) query.getSingleResult();
           return of(Note.fromWithImages(tuple));
@@ -59,11 +65,13 @@ public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository 
     public Page<Note> findByKeyword(Pageable pageable, String keyword) {
       var query = manager
                 .createNativeQuery(NoteQueries.FIND_BY_KEYWORD, Tuple.class)
-                    .setParameter("keyword", keyword);
+                    .setParameter("keyword", keyword)
+                    .setParameter("owner_id", serviceOwnerId());
 
       var count = ((BigInteger) manager
           .createNativeQuery(NoteQueries.COUNT_BY_KEYWORD)
           .setParameter("keyword", keyword)
+          .setParameter("owner_id", serviceOwnerId())
           .getSingleResult())
             .longValue();
       
@@ -83,11 +91,13 @@ public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository 
     public Page<Note> findByCollectionId(Long collectionId, Pageable pageable) {
       var query = manager
                 .createNativeQuery(NoteQueries.FIND_BY_COLLECTION_ID, Tuple.class)
-                    .setParameter("collection_id", collectionId);
+                    .setParameter("collection_id", collectionId)
+                    .setParameter("owner_id", serviceOwnerId());
 
       var count = ((BigInteger) manager
           .createNativeQuery(NoteQueries.COUNT_BY_COLLECTION_ID) 
           .setParameter("collection_id", collectionId)
+          .setParameter("owner_id", serviceOwnerId())
           .getSingleResult())
             .longValue();
       
@@ -106,10 +116,12 @@ public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository 
     @SuppressWarnings("unchecked")
     public Page<Note> findMany(Pageable pageable) {
       var query = manager
-              .createNativeQuery(NoteQueries.FIND_MANY, Tuple.class);
+              .createNativeQuery(NoteQueries.FIND_MANY, Tuple.class)
+              .setParameter("owner_id", serviceOwnerId());
       
       var count = ((BigInteger) manager
           .createNativeQuery(NoteQueries.COUNT_MANY)
+          .setParameter("owner_id", serviceOwnerId())
           .getSingleResult())
             .longValue();
 
@@ -127,14 +139,15 @@ public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository 
     @Override
     @SuppressWarnings("unchecked")
     public Page<Note> findManyWithFilter(String filter, Pageable pageable) {
-      LOGGER.info(">> findManyWithFilter:");
       var query = manager
               .createNativeQuery(NoteQueries.FIND_MANY_WITH_FILTER, Tuple.class)
-              .setParameter("filter", filter);
+              .setParameter("filter", filter)
+              .setParameter("owner_id", serviceOwnerId());
       
       var count = ((BigInteger) manager
           .createNativeQuery(NoteQueries.COUNT_MANY_WITH_FILTER)
           .setParameter("filter", filter)
+          .setParameter("owner_id", serviceOwnerId())
           .getSingleResult())
             .longValue();
 
@@ -152,13 +165,16 @@ public class NativeQueryNoteRepositoryImpl implements NativeQueryNoteRepository 
     @Override
     @SuppressWarnings("unchecked")
     public Page<Image> findImagesById(Long id, Pageable pageable) {
+      LOGGER.info("findImagesById: " + serviceOwnerId() + "_" + id);
       var query = manager
                 .createNativeQuery(NoteQueries.FIND_IMAGES_BY_ID, Tuple.class)
-                    .setParameter("note_id", id);
+                .setParameter("note_id", id)
+                .setParameter("owner_id", serviceOwnerId());
 
       var count = ((BigInteger) manager
           .createNativeQuery(NoteQueries.COUNT_IMAGES_BY_ID)
           .setParameter("note_id", id)
+          .setParameter("owner_id", serviceOwnerId())
           .getSingleResult())
             .longValue();
       
