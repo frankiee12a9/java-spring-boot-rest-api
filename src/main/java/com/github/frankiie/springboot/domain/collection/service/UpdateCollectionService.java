@@ -41,10 +41,9 @@ public class UpdateCollectionService {
 
       createProps.setCollection(collection);
 
-      var newComment = new Comment(createProps);
-      commentService.create(newComment);
-
-      return newComment;
+      var comment = new Comment(createProps);
+      commentService.create(comment);
+      return comment;
     }
 
     @Transactional
