@@ -1,7 +1,5 @@
 package com.github.frankiie.springboot.domain.collection.repository.custom;
 
-import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.*;
-
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
@@ -24,6 +22,7 @@ import com.github.frankiie.springboot.domain.collection.payload.UpdateCollection
 import com.github.frankiie.springboot.domain.collection_note_comment.entity.Comment;
 import com.github.frankiie.springboot.domain.pagination.model.Page;
 
+import static com.github.frankiie.springboot.domain.collection.repository.custom.CollectionQueries.*;
 import static com.github.frankiie.springboot.domain.session.service.SessionService.*;
 
 @Repository
@@ -122,7 +121,6 @@ public class NativeQueryCollectionRepositoryImpl implements NativeQueryCollectio
       return Page.of(collections, pageNumber, pageSize, count);
     }
 
-    @javax.transaction.Transactional
     @Override
     public Optional<Collection> updateById(Long id, UpdateCollectionProps updateProps) {
       String updateQuery = "UPDATE collection SET ";
