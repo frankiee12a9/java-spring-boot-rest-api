@@ -18,8 +18,5 @@ public interface NativeQueryCollectionRepository {
     Page<Collection> findByKeyword(Pageable pageable, String keyword);
     Page<Collection> findMany(Pageable pageable);
     Optional<Collection> updateById(Long id, UpdateCollectionProps props);
-
     Page<Comment> findCommentsById(Long id, Pageable pageable);  
-    // void deleteComment(Long commentId);
-    // void deleteAllCommentsById(Long id);
 }
