@@ -10,18 +10,14 @@
 
 -   [Features](#features)
 -   [Requirements](#requirements)
+-   [Database Schema](#database-schema)
 -   [Docker](#docker-deployment)
--   [Local installation](#local-installation)
--   [Entities](#entities)
--   [Running a specific test](#tests)
 -   [Swagger](#swagger)
+-   [Local installation](#local-installation)
+-   [Test](#tests)
 -   [Environment variables](#environment-variables)
 
 # Features
-
-<!-- <p align="center">
-  <a href="https://throyer-crud-api.herokuapp.com" target="blank"><img src="./assets/images/features.jpeg"  alt="" /></a>
-</p> -->
 
 | #   | **Features**                                 | **Description**                                                                                          |
 | --- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
@@ -34,6 +30,7 @@
 | 7   | Audit Fields                                 | Entities inherited audit fields such `create_at`, `used_at`, `created_by`, etc from the base entity      |
 | 8   | Docker                                       | Deployment with Docker Compose for the API and database                                                  |
 | 9   | Swagger Documentation                        | Swagger documentation get generated based on controllers endpoints specification                         |
+| 10  | Image upload                                 | Image uploading supported by Cloudinary                                                                  |
 
 ## Requirements
 
@@ -169,11 +166,7 @@ use the parameter `-Dtest=<class>#<method>`
 
 ## Swagger
 
-Once the application is fired up, it is available at: [localhost:8080/docs](http://localhost:8081/docs)
-
-> 🚨 if you set `SWAGGER_USERNAME` and `SWAGGER_PASSWORD` on [application.properties](https://github.com/Throyer/springboot-api-rest-example/blob/master/api/src/main/resources/application.properties#L35) file this route require authentication
-
----
+Once the application is fired up, it is available at: [localhost:8081/docs](http://localhost:8081/docs)
 
 ## Environment variables
 
