@@ -3,91 +3,91 @@ package com.github.frankiie.springboot.domain.user.repository.custom;
 public class UserQueries {
   
     public static final String FIND_BY_ID = """
-        with user_roles as (
-          select
+        with user_roles AS (
+          SELECT
               ur.user_id, string_agg(r.initials, ',') roles
-          from "role" r
-              left join user_role ur on r.id = ur.role_id
-          group by ur.user_id
+          FROM "role" r
+              LEFT JOIN user_role ur on r.id = ur.role_id
+          GROUP BY ur.user_id
         )
 
-        select
+        SELECT
           u.id,
           u."name",
           u.email,
           u.password,
           urs.roles
-        from
+        FROM
             "user" u
-        left join user_roles as urs on urs.user_id = u.id
-        where u.deleted_at is null and %s
-        order by u.created_at desc
+        LEFT JOIN user_roles AS urs on urs.user_id = u.id
+        WHERE u.deleted_at is null and %s
+        ORDER BY u.created_at DESC
     """;
 
     public static final String FIND_BY_FIELD_AND_FETCH_ROLES = """
-        with user_roles as (
-            select
+        with user_roles AS (
+            SELECT
                     ur.user_id, string_agg(r.initials, ',') roles
-            from "role" r
-                    left join user_role ur on r.id = ur.role_id
-            group by ur.user_id
+            FROM "role" r
+                    LEFT JOIN user_role ur on r.id = ur.role_id
+            GROUP BY ur.user_id
         )
 
-        select
+        SELECT
             u.id,
             u."name",
             u.email,
             u.password,
             urs.roles
-        from
+        FROM
             "user" u
-        left join user_roles as urs on urs.user_id = u.id
-        where u.deleted_at is null and %s
-        order by u.created_at desc
+        LEFT JOIN user_roles AS urs on urs.user_id = u.id
+        WHERE u.deleted_at is null and %s
+        ORDER BY u.created_at DESC
     """;
 
     public static final String FIND_BY_USERNAME_AND_FETCH_ROLES = """
-        with user_roles as (
-          select
+        with user_roles AS (
+          SELECT
               ur.user_id, string_agg(r.initials, ',') roles
-          from "role" r
-              left join user_role ur on r.id = ur.role_id
-          group by ur.user_id
+          FROM "role" r
+              LEFT JOIN user_role ur on r.id = ur.role_id
+          GROUP BY ur.user_id
         )
 
-        select
+        SELECT
           u.id,
           u."name",
           u.email,
           u.password,
           urs.roles
-        from
+        FROM
             "user" u
-        left join user_roles as urs on urs.username = u.username
-        where u.deleted_at is null and %s
-        order by u.created_at desc
+        LEFT JOIN user_roles AS urs on urs.username = u.username
+        WHERE u.deleted_at is null and %s
+        ORDER BY u.created_at DESC
     """;
 
     public static final String FIND_BY_EMAIL_AND_FETCH_ROLES = """
-        with user_roles as (
-          select
+        with user_roles AS (
+          SELECT
               ur.user_id, string_agg(r.initials, ',') roles
-          from "role" r
-              left join user_role ur on r.id = ur.role_id
-          group by ur.user_id
+          FROM "role" r
+              LEFT JOIN user_role ur on r.id = ur.role_id
+          GROUP BY ur.user_id
         )
 
-        select
+        SELECT
           u.id,
           u."name",
           u.email,
           u.password,
           urs.roles
-        from
+        FROM
             "user" u
-        left join user_roles as urs on urs.email = u.email
-        where u.deleted_at is null and %s
-        order by u.created_at desc
+        LEFT JOIN user_roles AS urs on urs.email = u.email
+        WHERE u.deleted_at is null and %s
+        ORDER BY u.created_at DESC
     """;
 
     public static final String DELETE_BY_ID = """
@@ -108,33 +108,33 @@ public class UserQueries {
     """;
 
     public static final String COUNT_ENABLED_USERS = """
-        select
+        SELECT
             count(id)
-        from
+        FROM
             "user"
-        where deleted_at is null                                                                               
+        WHERE deleted_at is null                                                                               
     """;
     
     public static final String FIND_ALL_AND_FETCH_ROLES = """
-        with user_roles as (
-            select
+        with user_roles AS (
+            SELECT
                     ur.user_id, string_agg(r.initials, ',') roles
-            from "role" r
-                    left join user_role ur on r.id = ur.role_id
-            group by ur.user_id 
+            FROM "role" r
+                    LEFT JOIN user_role ur on r.id = ur.role_id
+            GROUP BY ur.user_id 
         )
 
-        select
+        SELECT
             u.id,
             u."name",
             u.email,
             u.password,
             urs.roles
-        from 
+        FROM 
             "user" u
-        left join user_roles as urs on urs.user_id = u.id
-        where u.deleted_at is null
-        order by u.created_at desc
+        LEFT JOIN user_roles AS urs on urs.user_id = u.id
+        WHERE u.deleted_at is null
+        ORDER BY u.created_at DESC
     """;
 
 }
