@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.github.frankiie.springboot.domain.collection.payload.UpdateCollectionProps;
 import com.github.frankiie.springboot.domain.collection_image.entity.Image;
 import com.github.frankiie.springboot.domain.collection_note.entity.Note;
 import com.github.frankiie.springboot.domain.collection_note.repository.custom.NativeQueryNoteRepository;
@@ -40,18 +39,11 @@ public class NoteRepositoryImpl implements NoteRepository {
     @Override
     public Optional<Note> findById(Long id) {
       return springData.findById(id);
-      // return nativeQuery.findById(id); // note: same issue with the CollectionRepository.findById()
     }
 
     @Override
     public Optional<Note> findByIdAndFetchImages(Long id) {
       return nativeQuery.findByIdAndFetchImages(id); 
-    }
-
-    @Override
-    public Optional<Note> updateById(Long id, UpdateCollectionProps updateProps) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'updateById'");
     }
 
     @Override
