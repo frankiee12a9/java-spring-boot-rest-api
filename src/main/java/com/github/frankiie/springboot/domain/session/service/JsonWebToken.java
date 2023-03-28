@@ -24,7 +24,6 @@ import static java.time.ZoneId.systemDefault;
 import static java.util.Arrays.stream;
 import static java.util.Date.from;
 
-// @Component
 public class JsonWebToken {
   	private static final Logger LOGGER = LoggerFactory.getLogger(JsonWebToken.class);
 
@@ -111,7 +110,6 @@ public class JsonWebToken {
       try {
         var ans = decode(token, token);
         return true;
-        // return ans.get != null ? true : false;
       } catch (SignatureException ex) {
         LOGGER.error("Invalid JWT signature");
       } catch (MalformedJwtException ex) {

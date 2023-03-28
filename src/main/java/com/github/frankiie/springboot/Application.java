@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 
-import com.github.frankiie.springboot.beans.BeanConfiguration;
-import com.github.frankiie.springboot.beans.BeanLister;
-import com.github.frankiie.springboot.beans.MyBean;
+import com.github.frankiie.springboot.bean.BeanConfiguration;
+import com.github.frankiie.springboot.bean.BeanLister;
+import com.github.frankiie.springboot.bean.MyBean;
 import com.github.frankiie.springboot.configurations.DatabaseInitializer;
 
 @EnableCaching

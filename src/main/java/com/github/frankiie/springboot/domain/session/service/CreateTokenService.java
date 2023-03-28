@@ -41,7 +41,6 @@ public class CreateTokenService {
     }
 
     public TokenResponse create(UserResponse user) {
-
         var now = LocalDateTime.now();
         var expiresIn = now.plusHours(TOKEN_EXPIRATION_IN_HOURS);
 

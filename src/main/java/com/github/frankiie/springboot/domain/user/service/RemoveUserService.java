@@ -20,7 +20,7 @@ public class RemoveUserService {
 
     public void remove(Long id) {
         authorized()
-            .filter(authorized -> authorized.itsMeOrSessionIsADM(id))
+            .filter(authorized -> authorized.isMeOrAdmin(id))
                 .orElseThrow(() -> unauthorized(message(NOT_AUTHORIZED_TO_MODIFY, "'user'")));
         
         var user = userRepository

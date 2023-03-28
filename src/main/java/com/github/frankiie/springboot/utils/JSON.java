@@ -5,16 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JSON {
-
-    private JSON() { }
+    private JSON() { 
+    }
 
     private static final ObjectWriter writer = new ObjectMapper().writer().withDefaultPrettyPrinter();
     
     public static <T> String stringify(final T object) {
-        try {
-            return writer.writeValueAsString(object);
-        } catch (JsonProcessingException exception) {
-            return "";
-        }
+      try {
+        return writer.writeValueAsString(object);
+      } catch (JsonProcessingException exception) {
+        return exception.getMessage();
+      }
     }
+
 }

@@ -19,13 +19,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 public class CreateOrUpdateUserByAppForm implements Addressable {
 
     private Long id;
 
     @NotEmpty(message = "${user.name.not-empty}")
     private String name;
+
+    @NotEmpty(message = "${user.name.not-empty}")
+    private String username;
 
     @NotEmpty(message = "{user.email.not-empty}")
     @Email(message = "{user.email.is-valid}")
@@ -43,7 +45,7 @@ public class CreateOrUpdateUserByAppForm implements Addressable {
     }
 
     public User user() {
-        var user = new User(name, email, null, roles);
+        var user = new User(name, username, email, null, roles);
         user.setId(id);
         return user;
     }

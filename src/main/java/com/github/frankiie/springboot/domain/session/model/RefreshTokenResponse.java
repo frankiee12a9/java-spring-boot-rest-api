@@ -46,4 +46,5 @@ public class RefreshTokenResponse {
     public String getTokenType() {
         return "Bearer";
     }
+
 }

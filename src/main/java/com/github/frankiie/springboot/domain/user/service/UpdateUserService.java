@@ -23,7 +23,7 @@ public class UpdateUserService {
 
     public User update(Long id, UpdateUserProps body) {
         authorized()
-            .filter(authorized -> authorized.itsMeOrSessionIsADM(id))
+            .filter(authorized -> authorized.isMeOrAdmin(id))
             .orElseThrow(() -> unauthorized(message(NOT_AUTHORIZED_TO_MODIFY, "'user'")));
 
         var actual = userRepository
@@ -35,7 +35,6 @@ public class UpdateUserService {
         actual.merge(body);
 
         userRepository.save(actual);
-
         return actual;
     }
 }

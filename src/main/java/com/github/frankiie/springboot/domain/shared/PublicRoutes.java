@@ -15,10 +15,10 @@ import static java.util.Arrays.asList;
 import static java.util.logging.Level.SEVERE;
 
 public class PublicRoutes {
+    private static final Logger LOGGER = Logger.getLogger(PublicRoutes.class.getName());
+
     private final Map<HttpMethod, String[]> routes = new HashMap<>();
     private final List<AntPathRequestMatcher> matchers = new ArrayList<>();
-
-    private static final Logger LOGGER = Logger.getLogger(PublicRoutes.class.getName());
 
     private PublicRoutes() {
     }

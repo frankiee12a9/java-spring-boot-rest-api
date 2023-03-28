@@ -9,7 +9,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.validation.BindingResult;
 
 import com.github.frankiie.springboot.domain.mail.model.Addressable;
@@ -20,6 +19,9 @@ public class CreateUserProps implements Addressable {
 
     @NotEmpty(message = "${user.name.not-empty}")
     private String name;
+
+    @NotEmpty(message = "${user.name.not-empty}")
+    private String username;
 
     @NotEmpty(message = "{user.email.not-empty}")
     @Email(message = "{user.email.is-valid}")
@@ -38,6 +40,6 @@ public class CreateUserProps implements Addressable {
     }
     
     public User user() {
-        return new User(name, email, password, List.of());
+        return new User(name, username, email, password, List.of());
     }
 }

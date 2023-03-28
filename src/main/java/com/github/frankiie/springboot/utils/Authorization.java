@@ -6,7 +6,8 @@ import static com.github.frankiie.springboot.constants.SECURITY.*;
 import static java.util.Objects.isNull;
 
 public class Authorization {
-    private Authorization() { }
+    private Authorization() { 
+    }
 
     public static String extract(HttpServletRequest request) {
         var token = request.getHeader(AUTHORIZATION_HEADER);
@@ -25,4 +26,5 @@ public class Authorization {
     public static boolean tokenIsNull(String token) {
         return isNull(token) || !token.startsWith(ACCEPTABLE_TOKEN_TYPE);
     }
+
 }

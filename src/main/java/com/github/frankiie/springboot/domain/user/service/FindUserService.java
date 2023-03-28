@@ -25,7 +25,7 @@ public class FindUserService {
 
     public User find(Long id) {
         authorized()
-            .filter(authorized -> authorized.itsMeOrSessionIsADM(id))
+            .filter(authorized -> authorized.isMeOrAdmin(id))
             .orElseThrow(() -> unauthorized(message(NOT_AUTHORIZED_TO_READ, "'user'")));
 
         return repository

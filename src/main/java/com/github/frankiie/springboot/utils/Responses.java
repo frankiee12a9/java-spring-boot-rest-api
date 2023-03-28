@@ -25,14 +25,9 @@ import static com.github.frankiie.springboot.utils.Messages.message;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 /**
- * HTTP Responses.
- * <p>
- * Classe util para simplificar a geração
- * de responses para status codes comuns
- * utilizando <code>ResponseEntity</code>.
+ * HTTP Responses
  */
 public class Responses {
-
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(Responses.class.getName());
 
     private Responses() {
@@ -166,4 +161,5 @@ public class Responses {
             LOGGER.log(Level.SEVERE, CAN_T_WRITE_RESPONSE_ERROR, exception);
         }
     }
+
 }

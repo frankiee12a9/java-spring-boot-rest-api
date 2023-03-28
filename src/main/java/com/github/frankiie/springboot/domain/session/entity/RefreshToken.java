@@ -25,7 +25,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 public class RefreshToken implements Serializable {
-
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -55,4 +54,5 @@ public class RefreshToken implements Serializable {
     public Boolean nonExpired() {
         return expiresIn.isAfter(now());
     }
+
 }

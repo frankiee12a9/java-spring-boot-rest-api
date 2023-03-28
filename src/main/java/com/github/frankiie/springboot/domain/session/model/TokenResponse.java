@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 
 @Schema(name = "Token", requiredProperties = {"user", "accessToken", "refreshToken", "expiresIn", "tokenType"})
 public class TokenResponse {
-
     private final UserResponse user;
     private final String token;
     private final RefreshToken refreshToken;
@@ -66,4 +65,5 @@ public class TokenResponse {
     public String getTokenType() {
         return "Bearer";
     }
+
 }

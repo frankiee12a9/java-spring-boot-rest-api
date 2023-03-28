@@ -47,8 +47,6 @@ public class Authorized extends User {
      * @return
      */
     public UsernamePasswordAuthenticationToken getAuthentication() {
-        // return new UsernamePasswordAuthenticationToken(this, null, getAuthorities());
-        // var userDetails = new User();
         return new UsernamePasswordAuthenticationToken(this, null, getAuthorities());
     }
 
@@ -58,7 +56,7 @@ public class Authorized extends User {
             .anyMatch((role) -> role.getAuthority().equals("ADMIN"));
     }
 
-    public Boolean itsMeOrSessionIsADM(Long id) {
+    public Boolean isMeOrAdmin(Long id) {
         var admin = isAdmin();
         var equals = getId().equals(id);
         if (admin) {

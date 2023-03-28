@@ -10,7 +10,6 @@ import javax.validation.constraints.NotEmpty;
 @Getter
 @Setter
 public class TokenRequest {
-
     @NotEmpty(message = "{token.email.not-null}")
     @Email(message = "{token.email.is-valid}")
     private String email;
@@ -29,4 +28,5 @@ public class TokenRequest {
     public int hashCode() {
         return Objects.hash(getEmail(), getPassword());
     }
+
 }

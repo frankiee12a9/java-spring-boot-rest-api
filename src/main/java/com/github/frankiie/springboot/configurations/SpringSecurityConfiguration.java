@@ -155,8 +155,7 @@ public class SpringSecurityConfiguration {
     public SecurityFilterChain swagger(HttpSecurity http) throws Exception {
         if (Stream
                 .of(ofNullable(SWAGGER_PASSWORD), ofNullable(SWAGGER_USERNAME))
-                .allMatch(Optional::isPresent)) 
-        {
+                .allMatch(Optional::isPresent))  {
             http
               .antMatcher("/swagger-ui/**")
               .authorizeRequests()

@@ -22,4 +22,5 @@ public class Messages {
     public static String message(String key, Object... args) {
         return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
     }
+
 }

@@ -32,7 +32,6 @@ public class Page<T> {
     }
 
     public Page(Collection<? extends T> content, Integer page, Integer size, Long count) {
-      LOGGER.info("content: " + content);
       this.content = content;
       this.page = page;
       this.size = size;
@@ -61,4 +60,5 @@ public class Page<T> {
     public String toString() {
         return stringify(this);
     }
+
 }

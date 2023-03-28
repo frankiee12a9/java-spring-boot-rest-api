@@ -80,9 +80,6 @@ public class User extends Auditable implements Serializable, Addressable {
     public User(Long id) {
         this.id = id;
     }
-
-    public User(int id, int idid) {
-    }
     
     public User(String name, String email, String password) {
       this.name = name;
@@ -90,8 +87,9 @@ public class User extends Auditable implements Serializable, Addressable {
       this.password = password;
     }
 
-    public User(String name, String email, String password, List<Role> roles) {
+    public User(String name, String username, String email, String password, List<Role> roles) {
         this.name = name;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.roles = roles;
