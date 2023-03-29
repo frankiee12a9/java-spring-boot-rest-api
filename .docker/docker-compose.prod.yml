@@ -1,0 +1,56 @@
+version: '3'
+services:
+    database:
+        image: postgres:latest
+        restart: unless-stopped
+        container_name: bookmark-api-db
+        ports:
+            - '5432:5432'
+        environment:
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: bookmark_api
+        volumes:
+            - ./.volumes/database:/var/lib/postgresql/data
+        networks:
+            - bookmark-api-net
+        tty: true
+
+    api:
+        build:
+            context: ../
+            dockerfile: ../docker/Dockerfile.prod
+        platform: linux/x86_64
+        restart: unless-stopped
+        container_name: bookmark-api
+        links:
+            - database
+        ports:
+            - 8081:81
+        depends_on:
+            - database
+        environment:
+            DB_URL: ${DB_URL}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+        networks:
+            - bookmark-api-net
+        tty: true
+        entrypoint: 'dockerize -wait tcp://database:5432 -timeout 20s java -jar api.jar'
+
+    # web:
+    #   build:
+    #     context: ../web
+    #     dockerfile: ../web/docker/Dockerfile.prod
+    #   image: throyer/example-api-front-end:latest
+    #   restart: unless-stopped
+    #   container_name: example-api-front-end
+    #   ports:
+    #     - "8082:8080"
+    #   networks:
+    #     - example-api
+    #   tty: true
+
+networks:
+    bookmark-api-net:
+        driver: bridge
