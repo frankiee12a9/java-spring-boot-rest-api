@@ -1,0 +1,51 @@
+version: '3'
+services:
+    database:
+        image: postgres:13
+        restart: unless-stopped
+        container_name: bookmark-api-db
+        command:
+            [
+                'postgres',
+                '-c',
+                'log_statement=all',
+                '-c',
+                'log_destination=stderr',
+            ]
+        ports:
+            - '5433:5432'
+        environment:
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: bookmark_api
+        volumes:
+            - ./.volumes/database:/var/lib/postgresql/data
+        networks:
+            - bookmark-api-net
+        tty: true
+
+    api:
+        image: maven:3.8.5-openjdk-17
+        restart: unless-stopped
+        container_name: bookmark-api-dev
+        links:
+            - database
+        ports:
+            - '8081:8081'
+            - '8002:8002'
+        environment:
+            DB_URL: ${DB_URL}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - ../api:/app
+            - ./.volumes/maven:/root/.m2
+        working_dir: /app
+        networks:
+            - bookmark-api-net
+        tty: true
+        entrypoint: 'mvn clean spring-boot:run'
+
+networks:
+    bookmark-api-net:
+        driver: bridge
