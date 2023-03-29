@@ -1,4 +1,4 @@
-<h1 align="center">Spring Boot API REST API </h1>
+<h1 align="center">Spring Boot API REST API (80%...)  </h1>
 <p align="center">
   This is a simple REST API for a bookmark application (performing like Collections on Bing)
 </p>
@@ -23,7 +23,7 @@
 | --- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | 1   | CRUD operations                              | Support `Create`, `Read`, `Update`, and `Delete` for each domain                                         |
 | 2   | Lazy, Eager Loading on Entities Relationship | Entities can be loaded with its associated entities by Lazily loading and Eagerly loading configurations |
-| 3   | JSON Web Token                               | JSON Web Token integration for user session Authorization and Authentication                             |
+| 3   | Spring Security & Json Web Token             | Json Web Token integration for user session Authorization and Authentication                             |
 | 4   | Unit Tests & Integration Tests               | Unit test with JUnit, and Integration test with JDBC, Mocking Test and its coverage report with Jacoco   |
 | 5   | Soft Delete                                  | Soft Delete with Spring data                                                                             |
 | 6   | Password Recovery                            | Password recovery with code                                                                              |
@@ -47,41 +47,47 @@
 
 ## Docker Deployment
 
-> 🚨 create `environment` file and add permission to execute scripts
->
-> ```shell
-> cp .docker/.env.example .docker/.env && chmod -R +x .docker/scripts
-> ```
+> **For more details on this one, refer to [Docker compose section](https://github.com/frankiee12a9/java-spring-boot-rest-api/tree/dev)**
 
--   docker-compose for development
+🚨 create `environment` file and add permission to execute scripts
 
-    -   starting containers
+```shell
+$ cp .docker/.env.example .docker/.env && chmod -R +x .docker/scripts
+```
 
-    ```
-    .docker/scripts/develop up -d --build
-    ```
+docker-compose for development
 
-    -   removing contaiers
+-   starting containers
 
-    ```
-    .docker/scripts/develop down
-    ```
+```
+.docker/scripts/develop up -d --build
+```
 
-    -   show backend logs
+-   removing containers
 
-    ```
-    .docker/scripts/develop logs -f api
-    ```
+```
+.docker/scripts/develop down
+```
 
--   docker-compose for production
+-   show backend logs
 
-    ```
-    .docker/scripts/production up -d --build
-    ```
+```
+.docker/scripts/develop logs -f api
+```
 
-    ```
-    .docker/scripts/production down
-    ```
+docker-compose for production
+
+-   starting containers
+
+```
+.docker/scripts/production up -d --build
+```
+
+-   removing containers
+
+```
+.docker/scripts/production down
+```
 
 ## Local Installation
 
