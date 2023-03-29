@@ -47,20 +47,6 @@ services:
         tty: true
         entrypoint: 'mvn clean spring-boot:run'
 
-    # web:
-    #   image: node:16.14.2
-    #   restart: unless-stopped
-    #   container_name: example-api-front-end-development
-    #   ports:
-    #     - "4200:4200"
-    #   volumes:
-    #     - ../web:/app
-    #   working_dir: /app
-    #   networks:
-    #     - vendas
-    #   tty: true
-    #   entrypoint: "npm start"
-
 networks:
     bookmark-api-net:
         driver: bridge

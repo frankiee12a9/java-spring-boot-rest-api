@@ -1,205 +1,134 @@
-<h1 align="center">Spring Boot API REST API </h1>
-<p align="center">
-  This is a simple REST API for a bookmark application (performing like Collections on Bing)
-</p>
+## Docker Compose Specification
 
-<br>
-<br>
+### Use with Docker Development Environments
 
-## Table of Contents
+You can open this sample in the Dev Environments feature of Docker Desktop version 4.12 or later.
 
--   [Features](#features)
--   [Requirements](#requirements)
--   [Database Schema](#database-schema)
--   [Docker](#docker-deployment)
--   [Swagger](#swagger)
--   [Local installation](#local-installation)
--   [Test](#tests)
--   [Environment variables](#environment-variables)
+[Open in Docker Dev Environments <img src="../open_in_new.svg" alt="Open in Docker Dev Environments" align="top"/>](https://open.docker.com/dashboard/dev-envs?url=https://github.com/docker/awesome-compose/tree/master/spring-postgres)
 
-# Features
+### Java Spring Boot and a PostgreSQL database Application
 
-| #   | **Features**                                 | **Description**                                                                                          |
-| --- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| 1   | CRUD operations                              | Support `Create`, `Read`, `Update`, and `Delete` for each domain                                         |
-| 2   | Lazy, Eager Loading on Entities Relationship | Entities can be loaded with its associated entities by Lazily loading and Eagerly loading configurations |
-| 3   | JSON Web Token                               | JSON Web Token integration for user session Authorization and Authentication                             |
-| 4   | Unit Tests & Integration Tests               | Unit test with JUnit, and Integration test with JDBC, Mocking Test and its coverage report with Jacoco   |
-| 5   | Soft Delete                                  | Soft Delete with Spring data                                                                             |
-| 6   | Password Recovery                            | Password recovery with code                                                                              |
-| 7   | Audit Fields                                 | Entities inherited audit fields such `create_at`, `used_at`, `created_by`, etc from the base entity      |
-| 8   | Docker                                       | Deployment with Docker Compose for the API and database                                                  |
-| 9   | Swagger Documentation                        | Swagger documentation get generated based on controllers endpoints specification                         |
-| 10  | Image upload                                 | Image uploading supported by Cloudinary                                                                  |
+Project structure:
 
-## Requirements
+```
+|___.docker
+|   |__scripts
+|   |  |__...
+|   |__ docker-compose.dev.yml
+|   |__ docker-compose.prod.yml
+├── backend
+│   ├── docker/Dockerfile
+│   └── ...
+└── README.md
 
--   Postgres: 13+
--   Java: 17+
--   Maven: 3.8.0+
--   IntelliJ or VSCode
+```
 
-## Database Schema
+[_compose.yaml_](compose.yaml)
 
-<p>
-  <img src="https://user-images.githubusercontent.com/123849429/227813000-eb6f01cb-fbc1-47ef-a2ec-ac8287a801a8.png" alt="database diagram" />
-</p>
+### Database service
 
-## Docker Deployment
+```
+database:
+  image: postgres:13
+  restart: unless-stopped
+  container_name: bookmark-api-db
+  ports:
+      - '5433:5432'
+...
+```
 
-> 🚨 create `environment` file and add permission to execute scripts
->
-> ```shell
-> cp .docker/.env.example .docker/.env && chmod -R +x .docker/scripts
-> ```
+### API service
 
--   docker-compose for development
+```
+services:
+  backend:
+    build: backend
+    ports:
+    - 8081:8081
+  db:
+    image: postgres
+...
+```
 
-    -   starting containers
+The compose file defines an application with two services `api` and `database`.
+When deploying the application, docker compose maps port 8080 of the backend service container to port 8081 of the host machine as specified in the file.
+Make sure port 8080 on the host is not already being in use.
 
-    ```
-    .docker/scripts/develop up -d --build
-    ```
+## Test and Deploy
 
-    -   removing contaiers
+🚨 create `environment` file and add permission to execute scripts
 
-    ```
-    .docker/scripts/develop down
-    ```
+```shell
+$ cp .docker/.env.example .docker/.env && chmod -R +x .docker/scripts
+```
 
-    -   show backend logs
+docker-compose for development
 
-    ```
-    .docker/scripts/develop logs -f api
-    ```
+-   starting containers
 
--   docker-compose for production
+```
+.docker/scripts/develop up -d --build
+```
 
-    ```
-    .docker/scripts/production up -d --build
-    ```
+-   removing containers
 
-    ```
-    .docker/scripts/production down
-    ```
+```
+.docker/scripts/develop down
+```
 
-## Local Installation
+-   show backend logs
 
-> 🚨 check [requirements](#requirements) or if you are using docker check [docker development instructions](#docker-examples)
+```
+.docker/scripts/develop logs -f api
+```
 
--   clone the repository and redirect to the project directory.
-    ```shell
-    git clone git@github.com:frankiee12a9/java-spring-boot-rest-api.git && cd java-spring-boot-rest-api
-    ```
--   download dependencies
-    ```shell
-    mvn -f api/pom.xml install -DskipTests
-    ```
--   run the application (available at: [localhost:8081](http://localhost:8081))
-    ```shell
-    mvn clean spring-boot:run
-    ```
--   running the tests
-    ```shell
-    mvn -f api/pom.xml test
-    ```
--   to build for production
-    ```shell
-    mvn -f api/pom.xml clean package
-    ```
--   to generate the coverage report after testing `(available at: api/target/site/jacoco/index.html)`
-    ```shell
-    mvn -f api/pom.xml jacoco:report
-    ```
+docker-compose for production
 
-### Controller endpoints (quick reference)
+-   starting containers
 
-| #   | Controller        | Method - URL                                | Description |
-| --- | ----------------- | ------------------------------------------- | ----------- |
-| 1   | Authentication    | `POST` - `/api/sessions`                    | Description |
-|     |                   | `POST` - `/api/sessions/refresh`            | Description |
-| 2   | User              | `GET` - `/api/users/{id}`                   | Description |
-|     |                   | `GET` - `/api/users`                        | Description |
-|     |                   | `PUT` - `/api/users/{id}`                   | Description |
-|     |                   | `DELETE` - `/api/users/{id}`                | Description |
-|     |                   | `POST` - `/api/users`                       | Description |
-| 3   | Password Recovery | `POST` - `/api/recoveries`                  | Description |
-|     |                   | `POST` - `/api/recoveries/update`           | Description |
-|     |                   | `POST` - `/api/recoveries/confirm`          | Description |
-| 4   | Role              | `GET` - `/api/roles`                        | Description |
-| 5   | Collection        | `GET` - `/api/collections`                  | Description |
-|     |                   | `GET` - `/api/collections`                  | Description |
-|     |                   | `GET` - `/api/collections/{id}/notes`       | Description |
-|     |                   | `GET` - `/api/collections/{id}/comments`    | Description |
-|     |                   | `GET` - `/api/collections/sort?filter=?`    | Description |
-|     |                   | `GET` - `/api/collections/search/keyword=?` | Description |
-|     |                   | `PUT` - `/api/collections/{id}`             | Description |
-|     |                   | `PUT` - `/api/collections/{id}/addImage`    | Description |
-|     |                   | `PUT` - `/api/collections/{id}/addComment`  | Description |
-|     |                   | `POST` - `/api/collections`                 | Description |
-| 6   | Note              | `GET` - `/api/notes/{id}`                   | Description |
-|     |                   | `GET` - `/api/notes`                        | Description |
-|     |                   | `GET` - `/api/notes/{id}/images`            | Description |
-|     |                   | `GET` - `/api/notes/sort?filter=?`          | Description |
-|     |                   | `GET` - `/api/notes/search?keyword=?`       | Description |
-|     |                   | `PUT` - `/api/notes/{id}`                   | Description |
-|     |                   | `PUT` - `/api/notes/{id}/addImage`          | Description |
-|     |                   | `POST` - `/api/notes`                       | Description |
+```
+.docker/scripts/production up -d --build
+```
 
-**For the detailed references on the controllers endpoints, and their corresponding request params, request body, etc.. You should refer to the [Swagger documentation](#swagger) section.**
+-   removing containers
 
-## Tests
+```
+.docker/scripts/production down
+```
 
-<!--
-[![Coverage Status](https://coveralls.io/repos/github/Throyer/springboot-api-crud/badge.svg?branch=master)](https://coveralls.io/repos/github/Throyer/springboot-api-crud/badge.svg?branch=master) -->
+## Expected result
 
-![Coverage Status](https://coveralls.io/repos/github/Throyer/springboot-api-crud/badge.svg?branch=master)
+Listing containers must show two containers running and the port mapping as below:
 
-### Running a specific test
+```
+$ docker ps
+CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS                  NAMES
+56236f640eaa        postgres                  "docker-entrypoint.s…"   29 seconds ago      Up 28 seconds       5432/tcp               spring-postgres_db_1
+6e69472dc2c0        spring-postgres_backend   "java -Djava.securit…"   29 seconds ago      Up 28 seconds       0.0.0.0:8080->8080/tcp   spring-postgres_backend_1
+```
 
-use the parameter `-Dtest=<class>#<method>`
+Listing services (Docker images)
 
--   for example the integration test. creating a user:
-    ```shell
-    mvn -f api/pom.xml test -Dtest=UsersControllerTests#should_save_a_new_user
-    ```
+```
+$ docker images
+```
 
-## Swagger
+Listing the currently created Docker compose
 
-Once the application is fired up, it is available at: [localhost:8081/docs](http://localhost:8081/docs)
+```
+$ docker compose ls
+NAME                STATUS              CONFIG FILES
+bookmark-app        running(2)          C:\Users\<name.\<path>\<path>\<project>\.docker\docker-compose.dev.yml
+```
 
-## Environment variables
+After the application starts, navigate to `http://localhost:8081` in your web browse OR just run:
 
-| **Description**                          | **Parameter**                      | **Default values** |
-| ---------------------------------------- | ---------------------------------- | ------------------ |
-| server port                              | `SERVER_PORT`                      | 8080               |
-| database host                            | `DB_HOST`                          | localhost          |
-| database port                            | `DB_PORT`                          | 5432               |
-| database name                            | `DB_NAME`                          | example            |
-| database username                        | `DB_USERNAME`                      | root               |
-| database user password                   | `DB_PASSWORD`                      | root               |
-| displays the generated sql in the logger | `DB_SHOW_SQL`                      | false              |
-| set maximum database connections         | `DB_MAX_CONNECTIONS`               | 5                  |
-| secret value in token generation         | `TOKEN_SECRET`                     | secret             |
-| secret hash ids                          | `HASHID_SECRET`                    | secret             |
-| token expiration time in hours           | `TOKEN_EXPIRATION_IN_HOURS`        | 24                 |
-| refresh token expiry time in days        | `REFRESH_TOKEN_EXPIRATION_IN_DAYS` | 7                  |
-| SMTP server address                      | `SMTP_HOST`                        | smtp.gmail.com     |
-| SMTP server port                         | `SMTP_PORT`                        | 587                |
-| SMTP username                            | `SMTP_USERNAME`                    | user               |
-| SMTP server password                     | `SMTP_PASSWORD`                    | secret             |
-| time for recovery email to expire        | `MINUTES_TO_EXPIRE_RECOVERY_CODE`  | 20                 |
-| max requests per minute                  | `MAX_REQUESTS_PER_MINUTE`          | 50                 |
-| swagger url                              | `SWAGGER_URL`                      | /docs              |
-| swagger username                         | `SWAGGER_USERNAME`                 | `null`             |
-| swagger password                         | `SWAGGER_PASSWORD`                 | `null`             |
+```
+$ curl localhost:8081
+```
 
-> these variables are defined in: [**application.properties**](./src/main/resources/application.properties)
->
-> ```shell
-> # to change the value of some environment variable at runtime
-> # on execution, just pass it as a parameter. (like --SERVER_PORT=80).
-> $ java -jar api-5.0.0.jar --SERVER_PORT=80
-> ```
+If the application was fired up but is not running. check it logs:
 
-<!-- -   Referenced auth project (appear when complete): https://github.com/Throyer/springboot-api-rest-example -->
+```
+$ docker logs <container_name>
+```
