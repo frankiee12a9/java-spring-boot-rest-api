@@ -8,8 +8,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.github.frankiie.springboot.middlewares.OwnershipInterceptor;
-
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -50,7 +48,6 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
     scheme = "bearer"
 )
 public class SpringWebConfiguration implements WebMvcConfigurer {
-    @Autowired private OwnershipInterceptor ownershipInterceptor;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -58,11 +55,6 @@ public class SpringWebConfiguration implements WebMvcConfigurer {
             .addMapping("/**")
                 .allowedOrigins("*")
                 .allowedHeaders("*");
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-      registry.addInterceptor(ownershipInterceptor);
     }
 
     @Bean

@@ -151,8 +151,9 @@ public  class NoteQueries {
         WHERE 
             n.created_by = :owner_id
         ORDER BY 
-            n.created_at ASC
+            COALESCE(n.used_at, n.created_at) ASC
     """;
+        // n.used_at ASC
 
     public static final String COUNT_MANY = """
         SELECT
@@ -199,7 +200,7 @@ public  class NoteQueries {
             CASE WHEN :filter = 'created_at' THEN n.created_at END,
             CASE WHEN :filter = 'used_at' THEN n.used_at END
         )
-        SELECT COUNT(*) FROM filtered_notes;
+        SELECT COUNT(*) FROM filtered_notes
       """;
         
     public static final String COUNT_ACTIVE_COLLECTION_COMMENTS = """

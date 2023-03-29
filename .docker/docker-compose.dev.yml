@@ -31,14 +31,14 @@ services:
         links:
             - database
         ports:
-            - '8081:8081'
-            - '8002:8002'
+            - '8081:81'
+            # - '8002:8002'
         environment:
             DB_URL: ${DB_URL}
             DB_USERNAME: ${DB_USERNAME}
             DB_PASSWORD: ${DB_PASSWORD}
         volumes:
-            - ../api:/app
+            - ../backend:/app
             - ./.volumes/maven:/root/.m2
         working_dir: /app
         networks:
