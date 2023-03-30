@@ -31,7 +31,7 @@ services:
         links:
             - database
         ports:
-            # - '8082:82'
+            - '8082:8081'
             - '8002:8002'
         environment:
             DB_URL: ${DB_URL}
